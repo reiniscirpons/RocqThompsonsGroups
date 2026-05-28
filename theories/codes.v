@@ -1,6 +1,13 @@
 Require Import ssreflect ssrbool ssrfun.
 From mathcomp Require Import ssrnat eqtype div seq.
 
+(*
+  Initially:
+    Binary 1-rooted 
+    F, T, V groups
+  Milestone:
+    F is finitely generated
+*)
 Definition binary_word := seq bool.
 
 Definition comparable (word1 word2: binary_word): bool :=
@@ -14,20 +21,17 @@ Qed.
 Lemma comparable_symm: forall word1 word2,
   comparable word1 word2 -> comparable word2 word1.
 Proof.
-  move => word1 word2; rewrite !/comparable /=.
-  case /orP => ->; apply /orP.
-  - by right.
-  - by left.
+  by move => word1 word2; rewrite /comparable orbC.
 Qed.
 
 Lemma comparable_cons: forall letter word1 word2,
   comparable (letter::word1) (letter::word2) =
   comparable word1 word2.
 Proof.
-  move => letter word1 word2;
-  by rewrite !/comparable !prefix_cons !eq_refl /=.
+  by move => letter word1 word2; rewrite /comparable !prefix_cons !eq_refl.
 Qed.
 
+(* TODO(reiniscirpons): Maybe do sets? *)
 Definition binary_code := seq binary_word.
 
 Fixpoint prefix_code (code: binary_code): bool :=
@@ -97,6 +101,7 @@ Proof.
   by move/negP: Hw.
 Qed.
 
+(* TODO(reiniscirpons): Add a notion of completeness. *)
 Inductive binary_tree :=
 | Empty: binary_tree
 | Node: binary_tree -> binary_tree -> binary_tree.
