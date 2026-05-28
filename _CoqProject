@@ -1,0 +1,4 @@
+-docroot Thompson
+-R theories Thompson
+
+theories/codes.v
