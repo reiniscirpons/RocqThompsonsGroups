@@ -5,3 +5,53 @@
 % If you want to split the blueprint content into several files then
 % the current file can be a simple sequence of \input. Otherwise It
 % can start with a \section or \chapter for instance.
+\chapter{Preliminaries}
+
+In this section we rehash some basics of the relations between prefix codes, trees and Cantor sets.
+
+\section{Prefix codes}
+
+Let $A$ be a set. Recall that a word over $A$ is a sequence of elements of $A$, the set of all words over $A$
+including the empty word is denoted by $A^\ast$. We will write $xy$ for the concatenation of words $x, y\in A^\ast$.
+A word $x$ is a \emph{prefix} of a word $y$ if there exists a word $z$ such that $xz = y$. We write $x \preceq y$
+to denote that $x$ is a prefix of $y$.
+\begin{definition}%
+  \label{def:comparable}
+  \rocq{Thompson.codes.comparable}
+  \rocqok{}
+  Let $x, y\in A^\ast$. We say that $x$ and $y$ are \emph{comparable} if $x$ is a prefix of $y$ or vice-versa, i.e.
+  $x \preceq y$ or $y \preceq x$ holds. If $x$ and $y$ are not comparable, we say they are \emph{incomparable}.
+\end{definition}
+
+\begin{lemma}%
+  \label{lem:comparable_symm}
+  \uses{def:comparable}
+  \rocq{Thompson.codes.comparable_symm}
+  \rocqok{}
+  Let $x, y\in A^\ast$. Then $x$ and $y$ are comparable if and only if $y$ and $x$ are comparable.
+\end{lemma}
+\begin{proof}
+  \rocqok{}
+  The proof follows immediately from the definition, as ``or'' is symmetric.
+\end{proof}
+
+An important role in the theory of Thompsons groups is played by prefix codes, which we now define.
+
+\begin{definition}%
+  \label{def:prefix_code}
+  \uses{def:comparable}
+  \rocq{Thompson.codes.prefix_code}
+  \rocqok{}
+  A prefix code over $A$ is a set of words $P$ over $A$ such that every pair of distinct
+  words $w_1, w_2\in P$ are incomparable.
+\end{definition}
+
+\reinis{Finish this section}
+
+\section{Trees}
+
+\section{The Cantor set}
+
+\chapter{Thompsons groups and monoids}
+
+\chapter{Presentations}

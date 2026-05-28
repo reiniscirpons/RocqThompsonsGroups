@@ -27,3 +27,15 @@
  {\clist_map_inline:nn{#1}{\vphantom{\ref{##1}}}%
   \ignorespaces}
 \ExplSyntaxOff
+
+
+% colors for todonotes,
+\def\colRC{teal}
+\def\colLE{orange}
+% author-specific todo
+\newcommand{\reinis}[1]{\todo[inline,linecolor=\colRC,backgroundcolor=\colRC!25,bordercolor=\colRC]{Reinis: #1}}
+\newcommand{\luna}[1]{\todo[inline,linecolor=\colLE,backgroundcolor=\colLE!25,bordercolor=\colLE]{Luna: #1}}
+
+
+\newcommand{\genset}[1]{\left\langle #1 \right\rangle}
+\newcommand{\presset}[2]{\left\langle\, #1 \,\middle|\, #2 \,\right\rangle}
