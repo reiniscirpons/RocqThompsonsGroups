@@ -5,6 +5,23 @@
 % If you want to split the blueprint content into several files then
 % the current file can be a simple sequence of \input. Otherwise It
 % can start with a \section or \chapter for instance.
+
+
+%%% GOALS %%%
+% Big goal: prove F is finitely generated
+% 1. Define F
+% 2. Define elements of F
+% 3. Tree pairs
+% 4. Equivalence on binary trees (caret reduction)
+% 5. Equivalence on tree pairs
+% 6. Define generators
+% 7. Infinite generating set
+% 8. Reduction to finite.
+% 9. Try doing both cantor set and tree pairs?
+% 10. Equivalence trees and clopen subsets of Cantor
+% 11. Equivalence tree pairs and cantor 
+% 12. Do rational group instead?
+
 \chapter{Preliminaries}
 
 In this section we rehash some basics of the relations between prefix codes, trees and Cantor sets.
@@ -12,7 +29,7 @@ In this section we rehash some basics of the relations between prefix codes, tre
 \section{Prefix codes}
 
 Let $A$ be a set. Recall that a word over $A$ is a sequence of elements of $A$, the set of all words over $A$
-including the empty word is denoted by $A^\ast$. We will write $xy$ for the concatenation of words $x, y\in A^\ast$.
+including the empty word is denoted by $A^\ast$. We will write $xy$ for the concatenation of words $x, y\in A^\ast$. We denote the empty word by \(\varepsilon\).
 A word $x$ is a \emph{prefix} of a word $y$ if there exists a word $z$ such that $xz = y$. We write $x \preceq y$
 to denote that $x$ is a prefix of $y$.
 \begin{definition}%
@@ -42,13 +59,38 @@ An important role in the theory of Thompsons groups is played by prefix codes, w
   \uses{def:comparable}
   \rocq{Thompson.codes.prefix_code}
   \rocqok{}
-  A prefix code over $A$ is a set of words $P$ over $A$ such that every pair of distinct
+  A prefix code over $A$ is a finite set of words $P$ over $A$ such that every pair of distinct
   words $w_1, w_2\in P$ are incomparable.
 \end{definition}
 
+\begin{definition}\label{def:concat_letter_set}
+    Let \(x\in A\) and \(S\subseteq A^*\) be finite. We denote the set \(\makeset{xs}{\(s\in S\)}\) by \(xS\).
+\end{definition}
+
 \reinis{Finish this section}
-\luna{todo}
+
 \section{Trees}
+
+\begin{definition}%
+  \label{def:rooted_binary_tree}
+\uses{def:prefix_code,def:concat_letter_set}
+ A finite rooted binary tree \(T\) is one of:
+ \begin{itemize}
+     \item \(\{\varepsilon\}\);
+     \item a set of the form \(0T_0 \cup 1T_1 \cup \{\varepsilon\}\). Where \(T_0\) and \(T_1\) are finite rooted binary trees.
+ \end{itemize}
+\end{definition}
+
+\begin{definition}%
+  \label{def:leaf_of_a_tree}
+\uses{def:rooted_binary_tree}
+If \(T\) is a finite rooted binary tree, then a leaf of \(T\) is one of
+\begin{itemize}
+    \item \(\varepsilon\) if \(T=\{\varepsilon\}\);
+    \item \(0l\) if \(T=0T_0 \cup T_1 \cup \{\varepsilon\}\) and \(l\) is a leaf of \(T_0\);
+    \item \(1l\) if \(T=0T_0 \cup T_1 \cup \{\varepsilon\}\) and \(l\) is a leaf of \(T_1\).
+\end{itemize}
+\end{definition}
 
 \section{The Cantor set}
 
