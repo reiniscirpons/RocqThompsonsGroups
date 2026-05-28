@@ -5,14 +5,32 @@
 % If you want to split the blueprint content into several files then
 % the current file can be a simple sequence of \input. Otherwise It
 % can start with a \section or \chapter for instance.
+
+
+%%% GOALS %%%
+% Big goal: prove F is finitely generated
+% 1. Define F
+% 2. Define elements of F
+% 3. Tree pairs
+% 4. Equivalence on binary trees (caret reduction)
+% 5. Equivalence on tree pairs
+% 6. Define generators
+% 7. Infinite generating set
+% 8. Reduction to finite.
+% 9. Try doing both cantor set and tree pairs?
+% 10. Equivalence trees and clopen subsets of Cantor
+% 11. Equivalence tree pairs and cantor 
+% 12. Do rational group instead?
+
 \chapter{Preliminaries}
 
 In this section we rehash some basics of the relations between prefix codes, trees and Cantor sets.
 
 \section{Prefix codes}
 
-Let $A$ be a set. Recall that a word over $A$ is a sequence of elements of $A$, the set of all words over $A$
-including the empty word is denoted by $A^\ast$. We will write $xy$ for the concatenation of words $x, y\in A^\ast$.
+Let $\{0,1\}$ be a set. Recall that a word over $\{0,1\}$ is a sequence of elements of $\{0,1\}$, the set of all words over $\{0,1\}$
+including the empty word is denoted by $\{0,1\}^\ast$. We will write $xy$ for the concatenation of words $x, y\in \{0,1\}^\ast$. We denote the empty word by \(\varepsilon\).
+We denote the length of a word \(x\in \{0,1\}^*\) by \(|x|\).
 A word $x$ is a \emph{prefix} of a word $y$ if there exists a word $z$ such that $xz = y$. We write $x \preceq y$
 to denote that $x$ is a prefix of $y$.
 \begin{definition}%
@@ -42,15 +60,418 @@ An important role in the theory of Thompsons groups is played by prefix codes, w
   \uses{def:comparable}
   \rocq{Thompson.codes.prefix_code}
   \rocqok{}
-  A prefix code over $A$ is a set of words $P$ over $A$ such that every pair of distinct
+  A prefix code over $\{0,1\}$ is a set of words $P$ over $\{0,1\}$ such that every pair of distinct
   words $w_1, w_2\in P$ are incomparable.
+\end{definition}
+
+
+
+\begin{definition}\label{def:concat_letter_set}
+    Let \(x\in \{0,1\}\) and \(S\subseteq \{0,1\}^*\) be finite. We denote the set \(\makeset{xs}{\(s\in S\)}\) by \(xS\).
 \end{definition}
 
 \reinis{Finish this section}
 
-\section{Trees}
 
 \section{The Cantor set}
+The Thompson's groups act faithfully on the Cantor space of all infinite binary sequences. 
+This perspective makes some proofs easier so we will go back and forth between the two perspectives.
+\begin{definition}\label{def:Cantor_space}
+  An \emph{infinite word} over \(\{0,1\}\) is a function \(w:\mathbb{N}\to \{0,1\}\). We denote the set of all such infinite words by \(\{0,1\}^{\mathbb{N}}\).
+  This set is viewed as a topological space with the product topology using the discrete topology on \(\{0,1\}\).
+  We refer to this topological space as the \emph{Cantor space} and denote it by \(\mathfrak{C}\).
+  \luna{presumably rocq has the product topology built in?}
+  \reinis{Not built in, but the \texttt{mathcomp-analysis} library has it:
+  \url{https://math-comp.github.io/analysis/htmldoc/1_16_0/mathcomp.analysis.topology_theory.function_spaces.html\#prod_topology} - this is the type that the topology is defined on, i.e. the set of points in the space, in this case \texttt{forall i, T i} means that its the set of functions $f: I \rightarrow \bigcup_{i\in I} T_i$ mapping $i\in I$ to an element in $T_i$,
+  the actual definition of the topology is here:
+  \url{https://math-comp.github.io/analysis/htmldoc/1_16_0/mathcomp.analysis.topology_theory.function_spaces.html\#product_topology_def}, its  going a bit over my head to be honest, but it should be possible to figure out by following the links in the documentation.
+  }
+  \luna{nice!}
+\end{definition}
+Recall that an element of \(w\in \{0,1\}^*\) is a finite sequence in the alphabet \(\{0,1\}\). There are many equivalent ways to formally define a finite sequence. For our purposes it will be convenient to view an element \(w\in \{0,1\}^*\) as a function whose domain is \(\{0,1,\ldots, n-1\}\) where \(n\) is the length of \(w\).
+\luna{does rocq already have a way of going back and forth between equivalent notions of finite sequence?}
+\reinis{Yes, usually lemmas involving \texttt{reflect} prove this (going back and forth between computation and definition), they usually end with a letter ``P'' in Rocq sources (for ``Property''?).}
+\reinis{
+Rocq has a function \texttt{nth} which returns the $n$-th element of a sequence, and there is a reflection lemma in the
+\texttt{mathcomp} library, in the theory of sequences there is the \texttt{nthP} lemma \url{https://math-comp.github.io/htmldoc_2_5_0/mathcomp.boot.seq.html\#nthP}, which essentially
+says something like: ``being in a sequence is equivalent to being in the image''.}
+
+\begin{definition}\label{def:concat_fin_inf}
+\uses{def:Cantor_space}
+    Suppose that \(w\in \{0,1\}^*\) and \(x\in \{0,1\}^{\mathbb{N}}\). We write \(wx\) to denote the map from \(\mathbb{N}\) to \(\{0,1\}\) defined by
+    \[(n)wx=\begin{cases}
+        (n)w & \text{ if }n<|w|\\
+        (n-|w|)x & \text{ if }n\geq |w|.        
+    \end{cases}.\]
+    More generally. If \(S\subseteq \mathfrak{C}\), then we write \(wS\) for the set \(\makeset{wx}{\(x\in S\)}\).
+\end{definition}
+
+\begin{definition}\label{def:cones}
+\uses{def:concat_fin_inf}
+Suppose that \(w\in \{0,1\}^*\). We define the \emph{cone} of \(w\) to be the set
+\(w\mathfrak{C}\).
+\end{definition}
+
+Recall that for \(v,w\in \{0,1\}^*\), we write \(w\preceq v\) if \(v\in w\{0,1\}^*\).
+Hence the following definition.
+\begin{definition}\label{def:finite_prefix_of_cantor}
+\uses{def:Cantor_space}
+We say that \(w\in \{0,1\}^*\) is a \emph{prefix} of \(x\in \{0,1\}^{\mathbb{N}}\) if \(x\in w\mathfrak{C}\). We write $w \preceq x$
+to denote that $w$ is a prefix of $x$.
+\end{definition}
+
+\begin{definition}\label{def:restriction_of_infinite_string}
+\uses{def:Cantor_space}
+If \(x\in \mathfrak{C}\) and \(n\in \mathbb{N}\), then we write \(x|_n\) for the map with domain \(\{0,1, \ldots, n-1\}\) with \((i)x|_n=(i)x\) for all \(i<n\).
+\end{definition}
+\begin{definition}\label{def:restriction_of_finite_string}
+If \(v\in \{0,1\}^*\) and \(n\in \mathbb{N}\) satisfies \(n\leq |v|\), then we write \(v|_n\) for the map with domain \(\{0,1, \ldots, n-1\}\) with \((i)v|_n=(i)v\) for all \(i<n\).
+\end{definition}
+
+The following description of cones is often more helpful than the definition.
+\begin{lemma}\label{lem:cone_prefixes}
+\uses{def:finite_prefix_of_cantor,def:cones,def:restriction_of_infinite_string}
+    Suppose that \(w\in \{0,1\}^*\) and \(x\in \mathfrak{C}\). Then \(x\in w\mathfrak{C}\) if and only if \(w=x|_{|w|}\).
+\end{lemma}
+\begin{proof}
+    \((\Leftarrow):\) Suppose that \(w =x|_{|w|}\). Define \(x':\mathbb{N}\to \{0,1\}\) by \((n)x'=(n+|w|)x\).
+    As \(wx'\in w\mathfrak{C}\), we need only show that \(wx'=x\). Let \(n\in \mathbb{N}\) be arbitrary. We need only show that \((n)wx'=x\). If \(n<|w|\), then we have \((n)wx'=(n)w=(n)x|_{|w|}=(n)x\) as required.
+    If \(n\geq |w|\), then \((n)wx'=(n-|w|)x'=(n-|w|+|w|)x=(n)x\) as required.
+
+    \((\Rightarrow):\) Suppose that \(x\in w\mathfrak{C}\). It follows that there is \(x'\in \mathfrak{C}\) such that \(x=wx'\). In particular, for all \(n<|w|\), we have \((n)x|_{|w|}=(n)x=(n)wx'=(n)w\) as required.
+\end{proof}
+The same works for finite prefixes.
+\begin{lemma}\label{lem:finite_cone_prefixes}
+\uses{def:finite_prefix_of_cantor,def:cones, def:restriction_of_finite_string}
+    Suppose that \(w,v\in \{0,1\}^*\). Then \(v\in w\{0,1\}^*\) if and only if \(|v|\geq |w|\) and \(w=v|_{|w|}\).
+\end{lemma}
+\begin{proof}
+    \((\Leftarrow):\) Suppose that \(|v|\geq |w|\) and \(w =v|_{|w|}\). Define \(v':\{0,1 ,\ldots |v|-|w|-1\}\to \{0,1\}\) by \((n)v'=(n+|w|)v\).
+    As \(wv'\in w\{0,1\}^*\), we need only show that \(wv'=v\). First note that \(|v|=|w|+|v'|=|w|+|v|-|w|=|w|\).
+    Let \(n<|v|\) be arbitrary. We need only show that \((n)wv'=v\). If \(n<|w|\), then we have \((n)wv'=(n)w=(n)v|_{|w|}=(n)v\) as required.
+    If \(n\geq |w|\), then \((n)wv'=(n-|w|)v'=(n-|w|+|w|)v=(n)v\) as required.
+
+    \((\Rightarrow):\) Suppose that \(v\in w\{0,1\}^*\). It follows that there is \(v'\in \{0,1\}^*\) such that \(v=wv'\).
+    We have \(|v|=|w|+|v'|\geq |w|\).
+    Moreover, for all \(n<|w|\), we have \((n)v|_{|w|}=(n)v=(n)wv'=(n)w\) as required.
+\end{proof}
+
+\begin{lemma}\label{lem:double_restrict}
+\uses{lem:cone_prefixes,lem:finite_cone_prefixes}
+    Suppose that \(v,w\in \{0,1\}^*\) and \(x\in \mathfrak{C}\) are such that \(w\preceq v\) and \(v\preceq x\). Then \(w\preceq x\).
+\end{lemma}
+\begin{proof}
+By the definition of \(\preceq\) and Lemma~\ref{lem:finite_cone_prefixes}, it follows that \(v|_{|w|}=w\). Similarly, using Lemma~\ref{lem:cone_prefixes}, we have \(x|_{|v|}=v\).
+By Lemma~\ref{lem:cone_prefixes} we need to show that \(x|_{|w|}=w\).
+This follows as for all \(n<|w|\) we have \((n)x|_{|w|}=(n)x=(n)x|_{|v|}=(n)v=(n)v|_{|w|}=(n)w\).
+\end{proof}
+
+\begin{lemma}\label{lem:comp_cone_vs_word}
+\uses{def:cones,lem:cone_prefixes,lem:double_restrict}
+    If \(v,w\in \{0,1\}^*\), then \(w\preceq v \iff w\mathfrak{C} \supseteq v\mathfrak{C}\).
+\end{lemma}
+\begin{proof}
+\((\Rightarrow):\) Suppose that \(w\preceq v\) and \(x\in \mathfrak{C}\). We show that \(vx\in w\mathfrak{C}\). In other words, we must show that \(w\preceq vx\). As \(w\preceq v\) and \(v \preceq vx\), this follows from Lemma~\ref{lem:double_restrict}.
+
+\((\Leftarrow):\) Suppose that \(v\mathfrak{C} \subseteq w\mathfrak{C}\). We show that \(w\preceq v\). 
+Suppose for a contradiction that \(w\) is not a prefix of \(v\). It follows from Lemma~\ref{lem:finite_cone_prefixes} that either \(|w|>|v|\) or (\(|w|\leq |v|\) and \(v|_{|w|}\neq w\)). We consider each case separately.
+
+Case 1: Suppose that \(|w|>|v|\). Let \(x: \mathbb{N}\to \{0,1\}\) be defined by \((n)x=1-(|v|)w\) for all \(n\in \mathbb{N}\). Note that \(vx\in v\mathfrak{C}\). Thus \(vx\in w\mathfrak{C}\).
+By Lemma~\ref{lem:cone_prefixes}, it follows that \((vx)|_{|w|}=w\).
+In particular, \((|v|)w=(|v|)(vx)|_{|w|}=(|v|)vx=(|v|-|v|)x=1-(|v|)w\). 
+This is a contradiction.
+
+Case 2: Suppose that \(|w|\leq |v|\) and \(v|_{|w|}\neq w\). Let \(x:\mathbb{N}\to \{0,1\}\) be defined by \((n)x=0\) for all \(n\in \mathbb{N}\). Then \(vx\in v\mathfrak{C}\).
+It follows that \(vx\in w\mathfrak{C}\). 
+By Lemma~\ref{lem:cone_prefixes}, it follows that \((vx)|_{|w|}=w\). 
+As \((vx)|_{|w|}=v|_{|w|}\), this is a contradiction.
+\end{proof}
+
+\begin{lemma}\label{lem:words=cones}
+\uses{lem:comp_cone_vs_word}
+    If \(v,w\in \{0,1\}^*\), then \(w= v \iff w\mathfrak{C} = v\mathfrak{C}\).
+\end{lemma}
+\begin{proof}
+    This follows from Lemma~\ref{lem:comp_cone_vs_word} since \(\preceq\) and \(\subseteq\) are partial orders.
+\end{proof}
+
+\begin{lemma}\label{lem:intersecting_cones}
+\uses{lem:cone_prefixes}
+If \(v,w\in \{0,1\}^*\) and \(v\mathfrak{C} \cap w\mathfrak{C} \neq \varnothing\), then either \(v\mathfrak{C} \subseteq w\mathfrak{C}\) or \(w\mathfrak{C} \subseteq v\mathfrak{C}\).
+\end{lemma}
+\begin{proof}
+    If \(v\mathfrak{C} \cap w\mathfrak{C} \neq \varnothing\), then there is some \(x\in v\mathfrak{C} \cap w\mathfrak{C}\). 
+    In particular \(v\preceq x\) and \(w\preceq x\).
+    By Lemma~\ref{lem:cone_prefixes}, it follows that \(x|_{|v|}=v\) and \(x|_{|w|}=w\).
+    We either have \(|v|\geq |w|\) or \(|w|\geq |v|\). We consider each case separately.
+
+    Case 1: Suppose that \(|v|\geq |w|\). Then \(v|_{|w|}=(x|_{|v|})|_{|w|}=x|_{|w|}=w\). By Lemma~\ref{lem:finite_cone_prefixes}, it follows that \(w\leq v\). Thus by Lemma~\ref{lem:cone_prefixes}, we have \(v\mathfrak{C} \subseteq w\mathfrak{C}\).
+
+    Case 2: Suppose that \(|w|\geq |v|\). Then \(w|_{|v|}=(x|_{|w|})|_{|v|}=x|_{|v|}=v\). By Lemma~\ref{lem:finite_cone_prefixes}, it follows that \(v\leq w\). Thus by Lemma~\ref{lem:cone_prefixes}, we have \(w\mathfrak{C} \subseteq v\mathfrak{C}\).
+\end{proof}
+
+\begin{lemma}\label{lem:incompwords_vs_disjoint_cones}
+    \uses{lem:intersecting_cones}
+    If \(v,w\in \{0,1\}^*\), then \(v\) and \(w\) are incomparable if and only if \(v\mathfrak{C} \cap w \mathfrak{C} =\varnothing\).
+\end{lemma}
+\begin{proof}
+    \((\Rightarrow):\) We show the contrapositive.
+    Suppose that \(v\mathfrak{C} \cap w \mathfrak{C} \neq \varnothing\). By Lemma~\ref{lem:intersecting_cones}, it follows that \(v\mathfrak{C} \subseteq w\mathfrak{C}\) or \(w\mathfrak{C} \subseteq v\mathfrak{C}\). Thus by Lemma~\ref{lem:comp_cone_vs_word}, it follows that either \(w\preceq v\) or \(v\preceq w\).
+    So \(v\) and \(w\) are comparable.
+
+    \((\Leftarrow):\) We show the contrapositive. Suppose that \(v\) and \(w\) are comparable. 
+    
+    Case 1: If \(v\preceq w\), then by Lemma~\ref{lem:comp_cone_vs_word}, we have \(w\mathfrak{C} \subseteq v\mathfrak{C}\). In particular, \(v\mathfrak{C}\cap w\mathfrak{C}=w\mathfrak{C}\neq \varnothing\).
+
+    Case 2: If \(w\preceq v\), then by Lemma~\ref{lem:comp_cone_vs_word}, we have \(v\mathfrak{C} \subseteq w\mathfrak{C}\). In particular, \(w\mathfrak{C}\cap v\mathfrak{C}=v\mathfrak{C}\neq \varnothing\).
+\end{proof}
+
+\begin{lemma}\label{lem:prefix_code_disjoint_cones}
+\uses{lem:intersecting_cones, def:prefix_code}
+If \(P \subseteq \{0,1\}^*\), then \(P\) is a prefix code if and only if the sets \(v\mathfrak{C}\) and \(w\mathfrak{C}\) for \(v,w\in P\) are pairwise disjoint.
+\end{lemma}
+\begin{proof}
+    By Definition~\ref{def:prefix_code}, \(P\) is a prefix code if and only if all the words \(v,w\in P\) are pairwise incomparable. By Lemma~\ref{lem:intersecting_cones}, this is equivalent to saying that the sets \(v\mathfrak{C}\) and \(w\mathfrak{C}\) for \(v,w\in P\) are pairwise disjoint.
+\end{proof}
+
+
+\begin{definition}%
+  \label{def:complete_prefix_code}
+  \uses{def:prefix_code}
+A complete prefix code is a prefix code \(P\) such that for all  $x\in \mathfrak{C}$, there is $p_x\in P$ with \(x\in p_x\mathfrak{C}\).
+\end{definition}
+\begin{lemma}\label{lem:prefix_code=cone_parition}
+  \uses{lem:prefix_code_disjoint_cones, lem:words=cones,def:complete_prefix_code,lem:incompwords_vs_disjoint_cones}
+  A subset \(P\subseteq \{0,1\}^*\) is a complete prefix code if and only if \(\makeset{w\mathfrak{C}}{\(w\in P\)}\) is a partition of \(\mathfrak{C}\).
+\end{lemma}
+\begin{proof}
+    \((\Rightarrow):\) By Lemma~\ref{lem:prefix_code_disjoint_cones}, the members of the set \(\makeset{w\mathfrak{C}}{\(w\in P\)}\) are pairwise disjoint.
+    Let \(x:\mathbb{N}\to \{0,1\}\) be defined by \((n)x=0\) for all \(n\in \mathbb{N}\).
+    Note that for all \(w\in P\), we have \(wx\in w\mathfrak{C}\). Thus \(\makeset{w\mathfrak{C}}{\(w\in P\)}\) does not contain it empty set.
+    It remains to check that the members of \(\makeset{w\mathfrak{C}}{\(w\in P\)}\) cover \(\mathfrak{C}\). This follows from the definition of a complete prefix code (Definition~\ref{def:complete_prefix_code}).
+
+    \((\Leftarrow):\) As the members of \(\makeset{w\mathfrak{C}}{\(w\in P\)}\) cover \(\mathfrak{C}\), we need only check that \(P\) is a prefix code.
+    Let \(p,q\in P\) be such that \(p\neq q\).
+    We must show that \(p\) and \(q\) are incomparable.
+    We have \(p\mathfrak{C},q\mathfrak{C}\in \makeset{w\mathfrak{C}}{\(w\in P\)}\).
+    So either \(p\mathfrak{C}=q\mathfrak{C}\) or \(p\mathfrak{C}\cap q\mathfrak{C}=\varnothing\). We consider these cases separately.
+
+    Case 1: Suppose that \(p\mathfrak{C}=q\mathfrak{C}\). Then by Lemma~\ref{lem:words=cones}, it follows that \(p=q\). This is a contradiction.
+
+    Case 2: Suppose that \(p\mathfrak{C}\cap q\mathfrak{C}=\varnothing\). Then Lemma~\ref{lem:incompwords_vs_disjoint_cones} implies that \(p\) and \(q\) are incomparable as required.
+\end{proof}
+
+\begin{lemma}\label{lem:finite_complete_prefix_codes}
+\uses{lem:prefix_code=cone_parition,lem:words=cones}
+    All complete prefix codes are finite.
+\end{lemma}
+\begin{proof}
+Let \(P\) be a complete prefix code.
+By Lemma~\ref{lem:prefix_code=cone_parition}, the set \(\makeset{w\mathfrak{C}}{\(w\in P\)}\) is a partition of \(\mathfrak{C}\).
+As the elements of this partition are open.
+\luna{the proof that they're open depends on how the product topology is handled in rocq}
+\reinis{I would assume that this might already be implictly proved somewhere in the \texttt{mathcomp-analysis} library. They have the Cantor space defined in \url{https://math-comp.github.io/analysis/htmldoc/1_16_0/mathcomp.analysis.cantor.html}.}
+By Tychonoff's Theorem, the topological space \(\mathfrak{C}\) is compact.
+\luna{I'm just guessing that rocq has Tychonoff's Theorem.}
+\reinis{Oui, it seems they do in \texttt{mathcomp-analysis}:
+\url{https://math-comp.github.io/analysis/htmldoc/1_16_0/mathcomp.analysis.topology_theory.function_spaces.html\#tychonoff}}
+As \(\makeset{w\mathfrak{C}}{\(w\in P\)}\) is an open cover of \(\mathfrak{C}\) it has a finite subcover. 
+As this set is a partition, no strict subcover is still a cover. It follows that the set \(\makeset{w\mathfrak{C}}{\(w\in P\)}\) is finite.
+By Lemma~\ref{lem:words=cones}, the map \(w\mapsto w\mathfrak{C}\) from \(P\) to this cover is an injective map.
+As there is an injective map from \(P\) to a finite set, it follows that \(P\) is finite.
+\luna{assuming rocq has a thing for this}
+\reinis{Yes, its probably in the base \texttt{mathcomp} library, in the \texttt{fintype} theory:
+\url{https://math-comp.github.io/htmldoc_2_5_0/mathcomp.boot.fintype.html}.}
+\reinis{I think we can probably prove this a bit more combinatorially, however, if we change the definition of complete code to say something like ``A code is complete if the associated tree has no missing edges''}
+\reinis{Alternatively we could take the definition to be something like ``a prefix code is complete if it either consists of only the empty word, or alternatively, for every word $w$ of length at least $1$ in the code, if we can write $w = w^\prime a$, then there exist words $w_0, w_1$ in the code such that $w^\prime 0$ is a prefix of $w_0$ and $w^\prime 1$ is a prefix of $w_1$.}
+\reinis{We then only need to prove the partition of $\mathfrak{C}$ lemma (which follows through essentially the same) and dont need this lemma at all.}
+\end{proof}
+\section{Trees}
+
+We wish to view elements of Thompson's group \(V\) as equivalence classes of tree pairs. We must establish some terminology about binary trees in order to do this.
+\begin{definition}%
+  \label{def:rooted_binary_tree}
+\uses{def:prefix_code,def:concat_letter_set}
+ A finite rooted binary tree \(T\) is one of:
+ \begin{itemize}
+     \item \(\{\varepsilon\}\);
+     \item a set of the form \(0T_0 \cup 1T_1 \cup \{\varepsilon\}\) where \(T_0\) and \(T_1\) are finite rooted binary trees.
+ \end{itemize}
+\end{definition}
+
+\begin{definition}%
+  \label{def:leaf_of_a_tree}
+\uses{def:rooted_binary_tree}
+If \(T\) is a finite rooted binary tree, then a leaf of \(T\) is one of
+\begin{itemize}
+    \item \(\varepsilon\) if \(T=\{\varepsilon\}\);
+    \item \(0l\) if \(T=0T_0 \cup T_1 \cup \{\varepsilon\}\) and \(l\) is a leaf of \(T_0\);
+    \item \(1l\) if \(T=0T_0 \cup T_1 \cup \{\varepsilon\}\) and \(l\) is a leaf of \(T_1\).
+\end{itemize}
+\end{definition}
+
+\begin{definition}%
+  \label{def:leaf_set_of_a_tree}
+\uses{def:leaf_of_a_tree}
+If \(T\) is a finite rooted binary tree, then \(\mathcal{L}(T):=\makeset{t\in T}{\(t\) is a leaf of \(T\)}\).
+\end{definition}
+
+\begin{definition}%
+  \label{def:tree_pair}
+\uses{def:leaf_set_of_a_tree}
+A tree pair is a triple \((T_1,T_2,\phi)\) where \(T_1\) and \(T_2\) are finite rooted binary trees and \(\phi:\mathcal{L}(T_1)\to \mathcal{L}(T_2)\) is a bijection.
+\end{definition}
+
+\begin{definition}\label{def:tree_elementary_expansions}
+    \uses{def:rooted_binary_tree}
+    If \(T\) is a rooted binary tree and \(l\) is a leaf of \(T\), then we define the \emph{elementary expansion} \(T'\) of \(T\) at \(l\) to be the set:
+    \begin{itemize}
+        \item \(\{\varepsilon,0,1\}\) if \(l=\varepsilon\);
+        \item \(0T_0'\cup 1 T_1 \cup \{\varepsilon\}\) if \(T=0T_0 \cup 1T_1 \cup \{\varepsilon\}\), \(l=0l'\) for a leaf \(l'\) of \(T_0\), and \(T_0'\) is the elementary expansion of \(T_0\) at \(l'\);
+  \item \(0T_0\cup 1 T_1' \cup \{\varepsilon\}\) if \(T=0T_0 \cup 1T_1 \cup \{\varepsilon\}\), \(l=1l'\) for a leaf \(l'\) of \(T_1\), and \(T_1'\) is the elementary expansion of \(T_1\) at \(l'\).
+    \end{itemize}
+\end{definition}
+
+\begin{lemma}\label{lem:tree_elementary_expansion_is_tree}
+    \uses{def:tree_elementary_expansions}
+    If \(T\) is a finite rooted binary tree and \(l\) is a leaf of \(T\), then the elementary expansion \(T'\) of \(T\) at \(l\) is also a finite rooted binary tree.
+ \end{lemma}
+ \begin{proof}
+ We proceed by recursion:
+ \luna{Note sure how to write this properly but pretty sure rocq can accept proofs like this}
+ \reinis{This is just a proof by induction I think. Rocq can do those.}
+ \reinis{But I think in general this is a bit too set-theoretic of a definition!}
+ \reinis{The way we define trees in Rocq is a bit closer (if not the same) as the J´onsson-Tarski variety approach. I.e. the set of binary trees as we would define in Rocq using the \texttt{Inductive} keyword is essentially the free algebra \texttt{binary\_tree} generated by a single element \texttt{Empty} together with a single (non-associative!) binary operator
+ $\texttt{Node}: \texttt{binary\_tree}\times \texttt{binary\_tree}\rightarrow \texttt{binary\_tree}$.
+ The interpretation is that \texttt{Empty} is the empty tree, and the \texttt{Node} function takes two trees and produces a new tree by creates a new node and attaching the two trees as the right and left subtree.
+ }
+ \luna{This sounds cool! This is the same as the J´onsson-Tarski definition except in J´onsson-Tarski there are also two unary operations which undo the binary. I actually prefer this viewpoint. However without the set theoretic definition with finite words its unclear how to relate this to the cantor set. The usual way to relate J´onsson-Tarski algebra to the cantor set is by using the unary operations and noting that each endomorphism of the free J´onsson-Tarski algebra is determined by its birestriction to the set of elements reachable from the free generator using the unarys. 
+ It seems to me that the two most reasonable options are to either use an actual J´onsson-Tarski algebra (which I'm a big fan of and might even be more rocq friendly) or to use the definition of trees I use here. I'm of course open to counter suggestions though.}
+ 
+
+ Case 1: Suppose that \(T'=\{\varepsilon,0,1\}\). 
+ Then \(T'=0\{\varepsilon\} \cup 1\{\varepsilon\} \cup \{\varepsilon\}\). As \(\{\varepsilon\}\) is a finite rooted binary tree, it follows that \(T'\) is a finite rooted binary tree.
+
+ Case 2: Suppose that \(T'= 0T_0'\cup 1 T_1 \cup \{\varepsilon\}\), \(T=0T_0 \cup 1T_1 \cup \{\varepsilon\}\), \(l=0l'\) for a leaf \(l'\) of \(T_0\), and \(T_0'\) is the elementary expansion of \(T_0\) at \(l'\). By recursion, \(T_0'\) is a finite rooted binary tree. Thus \(T'\) is also a finite rooted binary tree.
+ 
+ Case 3: Suppose that \(T'= 0T_0\cup 1 T_1' \cup \{\varepsilon\}\), \(T=0T_0 \cup 1T_1 \cup \{\varepsilon\}\), \(l=1l'\) for a leaf \(l'\) of \(T_1\), and \(T_1'\) is the elementary expansion of \(T_1\) at \(l'\). By recursion, \(T_1'\) is a finite rooted binary tree. Thus \(T'\) is also a finite rooted binary tree.
+ \end{proof}
+
+\begin{lemma}\label{lem:leaves_of_elementary_expanion}
+    \uses{lem:tree_elementary_expansion_is_tree}
+    If \(T\) is a finite rooted binary tree, \(l\) is a leaf of \(T\) and \(T'\) is the elementary expansion of \(T\) at \(l\), then \(\mathcal{L}(T')=(\mathcal{L}(T)\backslash \{l\})\cup \{l0,l1\}\). Moreover this is a disjoint union.
+ \end{lemma}
+ \begin{proof}
+ Note that Lemma~\ref{lem:tree_elementary_expansion_is_tree} is required for the statement to be well-defined.
+ \luna{note sure how to say that properly}
+ We proceed by recursion.
+     There are three cases for \(T'\).
+
+     Case 1: Suppose that \(T'= \{\varepsilon\}\) and \(l=\varepsilon\). As \(T'\) is an elementary expansion of \(T\), it follows (by examining each case) that \(T'\) contains a word beginning with a \(0\). This is a contradiction.
+
+     Case 2: Suppose that \(T'= 0T_0'\cup 1 T_1 \cup \{\varepsilon\}\), \(T=0T_0 \cup 1T_1 \cup \{\varepsilon\}\), \(l=0l'\) for a leaf \(l'\) of \(T_0\), and \(T_0'\) is the elementary expansion of \(T_0\) at \(l'\).  By recursion, \(\mathcal{L}(T_0')\) is equal to the disjoint union \(\mathcal{L}(T_0)\backslash \{l'\})\cup \{l'0,l'1\}\). By Definition~\ref{def:leaf_of_a_tree}, it follows that
+     \(\mathcal{L}(T')= 0(\mathcal{L}(T_0)\backslash \{l'\})\cup \{l'0,l'1\})\cup 1\mathcal{L}(T_1)\) and \(\mathcal{L}(T)= 0\mathcal{L}(T_0)\cup 1\mathcal{L}(T_1)\).
+     As the first letter of \(l\) is a \(0\), it follows that \(l\in 0\mathcal{L}(T_0)\).
+     Thus we need only show that 
+     \[0(\mathcal{L}(T_0)\backslash \{l'\})\cup \{l'0,l'1\})= (0\mathcal{L}(T_0)\backslash \{l\})\cup \{l0,l1\}.\]
+     \luna{dont know how to reference injectivity of prepending letters}
+     \reinis{we get this for free, can just assume without proof. Essentially it is just a consequence of freeness of the set of words.}
+     As prepending a \(0\) is injective, it follows that 
+     \[0(\mathcal{L}(T_0)\backslash \{l'\})\cup \{l'0,l'1\})=0\mathcal{L}(T_0)\backslash \{0l'\})\cup \{0l'0,0l'1\}\]
+     and this union is still disjoint.
+     As \(l=0l'\), it follows that this set is equal to \((0\mathcal{L}(T_0)\backslash \{l\})\cup \{l0,l1\}\) as required.
+    
+ 
+ Case 3: Symmetric argument to Case 2.
+
+     
+ \end{proof}
+
+\begin{definition}%
+  \label{def:tree_pair_elementary_expansions}
+\uses{def:tree_pair,lem:tree_elementary_expansion_is_tree}
+If \((T_1,T_2,\phi)\) is a tree pair and \(l\) is a leaf of \(T_1\), then the \emph{elementary expansion} of \(T_1\) at \(l\) is the tree pair \((T_1',T_2',\phi')\) where 
+\begin{itemize}
+    \item \(T_1'\) is the elementary expansion of \(T_1\) at \(l\);
+    \item \(T_2'\) is the elementary expansion of \(T_1\) at \((l)\phi\);
+    \item \(\phi':\mathcal{L}(T_1')\to \mathcal{L}(T_2')\) is defined by
+    \[(w)\phi':=\begin{cases}
+        (w)\phi & \text{ if }w\text{ is a leaf of }T_1\\
+        (l)\phi 0 & \text{ if }w=l0\\
+        (l)\phi 1 & \text{ if }w=l1.
+    \end{cases}\]
+    \luna{The argument that these cases are exhaustive (and \(\phi\) is a bijection) is essentially Lemma~\ref{lem:leaves_of_elementary_expanion}. Not sure how to discuss definitions which require proofs to be of the correct type.}
+    \reinis{Usually this indicates that there is a way of defining this function recursively (inductively). Alternatively, we can define it as a partial function and then prove a lemma its total.}
+\end{itemize}
+\end{definition}
+
+
+\begin{lemma}\label{lem:tree_to_codes}
+\uses{def:leaf_of_a_tree,def:complete_prefix_code,lem:cone_prefixes}
+    If \(T\) is a finite rooted binary tree, then \(\mathcal{L}(T)\) is a complete prefix code.
+\end{lemma}
+\begin{proof}
+    We proceed recursively.
+
+    If \(T=\{\varepsilon\}\), then \(\mathcal{L}(T)=\{\varepsilon\}\). As \(\mathcal{L}(T)\) has only one element, it has no pair of incomparable elements. Thus \(\mathcal{L}(T)\) is a prefix code.
+    As \(\varepsilon \preceq x\) for all \(x\in \mathfrak{C}\), it follows that \(\mathcal{L}(T)\) is a complete prefix code.
+
+    Next suppose that \(T=0T_0 \cup 1T_1 \cup \{\varepsilon\}\) for some finite rooted binary trees \(T_0\) and \(T_1\). By recursion, the sets \(\mathcal{L}(T_0)\) and \(\mathcal{L}(T_1)\) are complete prefix codes.
+    Moreover, by Definition~\ref{def:leaf_of_a_tree}. We have \(\mathcal{L}(T)=0\mathcal{L}(T_0)\cup 1\mathcal{L}(T_1)\). No word in \(0\mathcal{L}(T_0)\) is comparable with any word of \(1\mathcal{L}(T_1)\) as they have distinct first letters. Moreover the elements of \(\mathcal{L}(T_0)\) being incomparable implies that the elements of \(0\mathcal{L}(T_0)\) are incomparable.
+    \luna{todo add reference to reinis's rocq lemma for this}
+    Similarly, the elements of \(1\mathcal{L}(T_1)\) are incomparable. Thus \(\mathcal{L}(T)\) is a prefix code.
+    Let \(x\in \mathfrak{C}\). 
+    There are two cases.
+
+    Case 1: Suppose that \((0)x=0\). It follows from Lemma~\ref{lem:cone_prefixes}, that \(x=0x'\) for some \(x'\in \mathfrak{C}\). There is some \(p\in \mathcal{L}(T_0)\) with \(p\leq x'\). It follows that \(0p \leq x\).
+
+    Case 2: \((0)x=1\). It follows from Lemma~\ref{lem:cone_prefixes}, that \(x=1x'\) for some \(x'\in \mathfrak{C}\). There is some \(p\in \mathcal{L}(T_1)\) with \(p\leq x'\). It follows that \(1p \leq x\).
+\end{proof}
+
+\begin{lemma}\label{lem:codes_to_trees}
+\uses{def:leaf_of_a_tree,def:complete_prefix_code, lem:finite_complete_prefix_codes}
+   If \(P\) is a complete prefix code, then there is a finite rooted binary tree \(T\) with \(\mathcal{L}(T)=P\).
+\end{lemma}
+\begin{proof}
+    Suppose that \(P\) is a complete prefix code.
+    By Lemma~\ref{lem:finite_complete_prefix_codes}, \(P\) is a finite set.
+    We proceed by induction on the length of the longest element of \(P\).
+
+    Base case: Suppose that \(w\in P\) has maximal length and \(|w|=0\). 
+    It follows that \(w=\varepsilon\). As \(P\) is a prefix code, it follows that \(P=\{\varepsilon\}\).
+    In particular \(P=\mathcal{L}(T)\) where \(T=\{\varepsilon\}\).
+
+    Inductive hypothesis: Suppose that \(n\in \mathbb{N}\) and for all complete prefix codes \(P\) all of whose words have length at most \(n\), there is a finite rooted binary tree with \(P=\mathcal{L}(T)\).
+
+    Inductive step: Suppose that \(P\) is a complete prefix code and the maximum length of an element of \(P\) is \(n+1\).
+    Let \(P_0= P\cap 0\{0,1\}^*\) and  \(P_1= P\cap 1\{0,1\}^*\). 
+    For all \(x\in 1 \mathfrak{C}\), there is a prefix of \(x\) belonging to \(P\). 
+    As \(P\) is a prefix code and contains a word of positive length, it follows that \(\varepsilon \not\in P\).
+    It follows that for all \(x\in 1 \mathfrak{C}\), there is a prefix of \(x\) belonging to \(P_1\).
+    Similarly for all \(x\in 0 \mathfrak{C}\), there is a prefix of \(x\) belonging to \(P_0\).
+    Let \(P_0'\) be the set obtained from \(P_0\) by removing the first letter of every word. 
+    By reinis's thing, the set \(P_0\) is a prefix code. Moreover the elements of \(P_0\) have length at most \(n\).
+    As for all \(x\in 0 \mathfrak{C}\), there is a prefix of \(x\) belonging to \(P_0\). Thus \(P_0'\) is a complete prefix code.
+    Define a complete prefix code \(P_1'\) similarly.
+    By the inductive hypothesis, there are finite rooted binary trees \(T_0\) and \(T_1\) such that
+    \[P_0'=\mathcal{L}(T_0)\text{ and }P_1'=\mathcal{L}(T_1).\]
+    Let \(T=0T_0\cup 1T_1 \cup \{\varepsilon\}\). Note that by Definition~\ref{def:rooted_binary_tree}, it follows that \(T\) is a finite rooted binary tree.
+    Moreover, by Definition~\ref{def:leaf_of_a_tree}, it follows that \(\mathcal{L}(T)=0\mathcal{L}(T_0)\cup 1\mathcal{L}(T_1)=P_0\cup P_1=P\) as required.
+\end{proof}
+
+\begin{theorem}\label{thm:tree=complete_prefix_code}
+\uses{lem:tree_to_codes,lem:codes_to_trees}
+    A subset \(P\subseteq \{0,1\}^*\) is a complete prefix code if and only if it is the set of leafs of a finite rooted binary tree.
+\end{theorem}
+\begin{proof}
+    \((\Rightarrow):\) Lemma~\ref{lem:codes_to_trees}.
+
+    \((\Leftarrow):\) Lemma~\ref{lem:tree_to_codes}.
+\end{proof} 
+
+
+
+
 
 \chapter{Thompsons groups and monoids}
 
