@@ -80,11 +80,11 @@ This perspective makes some proofs easier so we will go back and forth between t
   An \emph{infinite word} over \(\{0,1\}\) is a function \(w:\mathbb{N}\to \{0,1\}\). We denote the set of all such infinite words by \(\{0,1\}^{\mathbb{N}}\).
   This set is viewed as a topological space with the product topology using the discrete topology on \(\{0,1\}\).
   We refer to this topological space as the \emph{Cantor space} and denote it by \(\mathfrak{C}\).
-  \luna{presumable rocq has the product topology built in?}
-  \reinis{Not built in, but the \texttt{mathcomp-analysis} library has it:\\
-  \url{https://math-comp.github.io/analysis/htmldoc/1_16_0/mathcomp.analysis.topology_theory.function_spaces.html#prod_topology} - this is the type that the topology is on, i.e. the set of points in the space I guess, in this case \texttt{forall i, T i} means that its the set of functions $f: I \rightarrow \bigcup_{i\in I} T_i$ mapping $i\in I$ to an element in $T_i$,\\
+  \luna{presumably rocq has the product topology built in?}
+  \reinis{Not built in, but the \texttt{mathcomp-analysis} library has it:
+  \url{https://math-comp.github.io/analysis/htmldoc/1_16_0/mathcomp.analysis.topology_theory.function_spaces.html\#prod_topology} - this is the type that the topology is defined on, i.e. the set of points in the space, in this case \texttt{forall i, T i} means that its the set of functions $f: I \rightarrow \bigcup_{i\in I} T_i$ mapping $i\in I$ to an element in $T_i$,
   the actual definition of the topology is here:
-  \url{https://math-comp.github.io/analysis/htmldoc/1_16_0/mathcomp.analysis.topology_theory.function_spaces.html#product_topology_def}, its  going a bit over my head to be honest, but it should be possible to figure out by following the links in the documentat
+  \url{https://math-comp.github.io/analysis/htmldoc/1_16_0/mathcomp.analysis.topology_theory.function_spaces.html\#product_topology_def}, its  going a bit over my head to be honest, but it should be possible to figure out by following the links in the documentation.
   }
 \end{definition}
 Recall that an element of \(w\in \{0,1\}^*\) is a finite sequence in the alphabet \(\{0,1\}\). There are many equivalent ways to formally define a finite sequence. For our purposes it will be convenient to view an element \(w\in \{0,1\}^*\) as a function whose domain is \(\{0,1,\ldots, n-1\}\) where \(n\) is the length of \(w\).
@@ -264,13 +264,17 @@ Let \(P\) be a complete prefix code.
 By Lemma~\ref{lem:prefix_code=cone_parition}, the set \(\makeset{w\mathfrak{C}}{\(w\in P\)}\) is a partition of \(\mathfrak{C}\).
 As the elements of this partition are open.
 \luna{the proof that they're open depends on how the product topology is handled in rocq}
+\reinis{I would assume that this might already be implictly proved somewhere in the \texttt{mathcomp-analysis} library. They have the Cantor space defined in \url{https://math-comp.github.io/analysis/htmldoc/1_16_0/mathcomp.analysis.cantor.html}.}
 By Tychonoff's Theorem, the topological space \(\mathfrak{C}\) is compact.
 \luna{I'm just guessing that rocq has Tychonoff's Theorem.}
+\reinis{Oui, it seems they do in \texttt{mathcomp-analysis}:
+\url{https://math-comp.github.io/analysis/htmldoc/1_16_0/mathcomp.analysis.topology_theory.function_spaces.html\#tychonoff}}
 As \(\makeset{w\mathfrak{C}}{\(w\in P\)}\) is an open cover of \(\mathfrak{C}\) it has a finite subcover. 
 As this set is a partition, no strict subcover is still a cover. It follows that the set \(\makeset{w\mathfrak{C}}{\(w\in P\)}\) is finite.
 By Lemma~\ref{lem:words=cones}, the map \(w\mapsto w\mathfrak{C}\) from \(P\) to this cover is an injective map.
 As there is an injective map from \(P\) to a finite set, it follows that \(P\) is finite.
 \luna{assuming rocq has a thing for this}
+\reinis{Yes, its probably in }
 \end{proof}
 \section{Trees}
 
