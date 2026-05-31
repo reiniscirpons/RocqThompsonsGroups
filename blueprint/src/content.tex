@@ -35,7 +35,7 @@ A word $x$ is a \emph{prefix} of a word $y$ if there exists a word $z$ such that
 to denote that $x$ is a prefix of $y$.
 \begin{definition}%
   \label{def:comparable}
-  \rocq{Thompson.codes.comparable}
+ \rocq{Thompson.codes.comparable}
   \rocqok{}
   Let $x, y\in A^\ast$. We say that $x$ and $y$ are \emph{comparable} if $x$ is a prefix of $y$ or vice-versa, i.e.
   $x \preceq y$ or $y \preceq x$ holds. If $x$ and $y$ are not comparable, we say they are \emph{incomparable}.
@@ -496,7 +496,7 @@ If \((T_1,T_2,\phi)\) is a tree pair and \(l\) is a leaf of \(T_1\), then the \e
 For each complete prefix code \(P\), we define a map \(\phi_P:P\times \mathfrak{C}\to \mathfrak{C}\) by \((p,x)\phi_P=px\).
 \end{definition}
 
-\begin{lemma}\label{def:prefix_cantor_to_cantor}
+\begin{lemma}\label{def:cantor_to_prefix_code_cantor}
 \uses{def:prefix_cantor_to_cantor,lem:prefix_code=cone_parition,lem:words=cones}
   If \(P\) is a complete prefix code, then there is a unique map \(\phi_P^{-1}:\mathfrak{C}\to P\times \mathfrak{C}\) such that \(\phi_P^{-1}\phi_P\) and \(\phi_P\phi_P^{-1}\) are the identity functions.
 \end{lemma}
@@ -518,7 +518,7 @@ For each complete prefix code \(P\), we define a map \(\phi_P:P\times \mathfrak{
 \end{definition}
 
 \begin{definition}\label{def:tree_pair_to_prefix_replacement}
-\uses{def:prefix_cantor_to_cantor,def:direct_sum_of_functions}
+\uses{def:cantor_to_prefix_code_cantor,def:direct_sum_of_functions}
 Suppose that \(P=(T_1,T_2,\phi)\) is a tree pair. We define a \(f_P:\mathfrak{C}\to \mathfrak{C}\) to be the function
 \(f_P = \phi_{\mathcal{L}(T_1)}^{-1} \circ (\phi \oplus \operatorname{id}_{\mathfrak{C}})\circ \phi_{\mathcal{L}(T_2)}.\)
 \end{definition}
@@ -694,8 +694,7 @@ A \emph{Jonsson-Tarski expression} is either
 \end{itemize}
 \end{definition}
 
-\begin{definition}\label{def:jt_expression}
-\rocq{Thompson.codes.jt_expression}
+\begin{definition}\label{def:reduced_jt_expression}
 A \emph{reduced Jonsson-Tarski expression} is either
 \begin{itemize}
     \item The empty expression;
