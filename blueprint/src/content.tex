@@ -464,7 +464,7 @@ do we lose much by adding in a constraint that says its undefined?}
 
 \begin{theorem}\label{thm:tree=complete_prefix_code}
 \uses{lem:tree_to_codes,lem:codes_to_trees}
-    A subset \(P\subseteq \{0,1\}^*\) is a complete prefix code if and only if it is the set of leafs of a finite rooted binary tree.
+    A subset \(P\subseteq \{0,1\}^*\) is a complete prefix code if and only if it is the set of leaves of a finite rooted binary tree.
 \end{theorem}
 \begin{proof}
     \((\Rightarrow):\) Lemma~\ref{lem:codes_to_trees}.
@@ -473,8 +473,7 @@ do we lose much by adding in a constraint that says its undefined?}
 \end{proof} 
 
 
-\begin{definition}%
-  \label{def:tree_pair_elementary_expansions}
+\begin{definition}\label{def:tree_pair_elementary_expansions}
 \uses{def:tree_pair,lem:tree_elementary_expansion_is_tree}
 If \((T_1,T_2,\phi)\) is a tree pair and \(l\) is a leaf of \(T_1\), then the \emph{elementary expansion} of \(T_1\) at \(l\) is the tree pair \((T_1',T_2',\phi')\) where 
 \begin{itemize}
@@ -492,6 +491,235 @@ If \((T_1,T_2,\phi)\) is a tree pair and \(l\) is a leaf of \(T_1\), then the \e
 \end{definition}
 
 
+\begin{definition}\label{def:prefix_cantor_to_cantor}
+\uses{def:complete_prefix_code,def:concat_fin_inf}
+For each complete prefix code \(P\), we define a map \(\phi_P:P\times \mathfrak{C}\to \mathfrak{C}\) by \((p,x)\phi_P=px\).
+\end{definition}
+
+\begin{lemma}\label{def:prefix_cantor_to_cantor}
+\uses{def:prefix_cantor_to_cantor,lem:prefix_code=cone_parition,lem:words=cones}
+  If \(P\) is a complete prefix code, then there is a unique map \(\phi_P^{-1}:\mathfrak{C}\to P\times \mathfrak{C}\) such that \(\phi_P^{-1}\phi_P\) and \(\phi_P\phi_P^{-1}\) are the identity functions.
+\end{lemma}
+\begin{proof}
+    We need only show that \(\phi_P\) is a bijection.
+
+    Injective: Suppose that \((p,x)\phi_P=(p',x')\phi_P\). It follows that \(px=p'x'\). In particular, \(p\mathfrak{C}\cap p'\mathfrak{C}\neq \varnothing\).
+    By Lemma~\ref{lem:prefix_code=cone_parition}, it follows that \(p\mathfrak{C}= p'\mathfrak{C}\). 
+    Thus by \cref{lem:words=cones}, we have \(p=p'\).
+    For all \(n\in \mathbb{N}\), we have \((n)x=(n+|p|)px=(n+|p|)p'x'=(n+|p|)px'=(n)x'\). Thus \(x=x'\) as well. It follows that \((p,x)=(p',x')\).
+
+    Surjective: Let \(x\in \mathfrak{C}\). It follows from \cref{def:complete_prefix_code} that there is \(p_x\in P\) with \(x\in p_x\mathfrak{C}\). So there is \(x'\in \mathfrak{C}\) with \(x=p_xx'\). In particular, \(x=(p_x,x')\phi_P\).
+\end{proof}
+
+\begin{definition}\label{def:direct_sum_of_functions}
+    Suppose that \(A\), \(B\), \(C\) and \(D\) are sets. 
+    Suppose further that \(f_{A,B}:A\to B\) and \(f_{C,D}:C\to D\) are functions.
+    We write \(f_{A,B}\oplus f_{C,D}\) for the function from \(A\times C\) to \(B\times D\) defined by \((a,c)\mapsto ((a)f_{A,B},(c)f_{C,D})\).
+\end{definition}
+
+\begin{definition}\label{def:tree_pair_to_prefix_replacement}
+\uses{def:prefix_cantor_to_cantor,def:direct_sum_of_functions}
+Suppose that \(P=(T_1,T_2,\phi)\) is a tree pair. We define a \(f_P:\mathfrak{C}\to \mathfrak{C}\) to be the function
+\(f_P = \phi_{\mathcal{L}(T_1)}^{-1} \circ (\phi \oplus \operatorname{id}_{\mathfrak{C}})\circ \phi_{\mathcal{L}(T_2)}.\)
+\end{definition}
+
+\begin{lemma}\label{lem:expansions_are_safe}
+\uses{def:tree_pair_to_prefix_replacement,def:tree_pair_elementary_expansions}
+Suppose that \(P=(T_1,T_2,\phi)\) is a tree pair, \(l\) is a leaf of \(T_1\) and \(P'=(T_1',T_2',\phi')\) is the expansion of \(P\) at \(L\).
+Then \(f_{P}=f_{P'}\).
+\end{lemma}
+\begin{proof}
+Let \(x\in \mathfrak{C}\).
+We must show that \((x)f_P=(x)f_{P'}\).
+By Theorem~\ref{thm:tree=complete_prefix_code}, the set \(\mathcal{L}(T_1')\) is a complete prefix code.
+Thus by Lemma~\ref{lem:leaves_of_elementary_expanion}, it follows that \((\mathcal{L}(T)\backslash \{l\})\cup \{l0,l1\}\) is a complete prefix code (and this union is disjoint).
+So by Lemma~\ref{lem:prefix_code=cone_parition}, there is a unique \(p\in (\mathcal{L}(T)\backslash \{l\})\cup \{l0,l1\}\) with \(x\in p\mathfrak{C}\). Let \(x'\in \mathfrak{C}\) be such that \(x=px'\).
+We proceed by cases.
+
+Case 1: Suppose that \(p\in \mathcal{L}(T)\backslash \{l\}\). It follows that
+\begin{align*}
+    (x)f_P&=(px')\phi_{\mathcal{L}(T_1)}^{-1} \circ (\phi \oplus \operatorname{id}_{\mathfrak{C}})\circ \phi_{\mathcal{L}(T_2)}\\
+    &= (p,x')(\phi \oplus \operatorname{id}_{\mathfrak{C}})\circ \phi_{\mathcal{L}(T_2)}\\
+    &= ((p)\phi,x') \phi_{\mathcal{L}(T_2)}\\
+    &= (p)\phi \cdot x' 
+\end{align*}
+As \(p\in \mathcal{L}(T')\) as well and \((p)\phi'=(p)\phi\) by Definition~\ref{def:tree_pair_elementary_expansions}, it follows that similarly
+\begin{align*}
+    (x)f_{P'}&=(px')\phi_{\mathcal{L}(T_1')}^{-1} \circ (\phi' \oplus \operatorname{id}_{\mathfrak{C}})\circ \phi_{\mathcal{L}(T_2')}\\
+    &= (p,x')(\phi' \oplus \operatorname{id}_{\mathfrak{C}})\circ \phi_{\mathcal{L}(T_2')}\\
+    &= ((p)\phi',x') \phi_{\mathcal{L}(T_2')}\\
+    &= (p)\phi' \cdot x'\\
+    &= (p)\phi \cdot x'.
+\end{align*}
+So \((x)f_P=(x)f_{P'}\) as required.
+
+
+Case 2: Suppose that \(p=l0\).
+It follows that
+\begin{align*}
+    (x)f_P&=(l0x')\phi_{\mathcal{L}(T_1)}^{-1} \circ (\phi \oplus \operatorname{id}_{\mathfrak{C}})\circ \phi_{\mathcal{L}(T_2)}\\
+    &= (l,0x')(\phi \oplus \operatorname{id}_{\mathfrak{C}})\circ \phi_{\mathcal{L}(T_2)}\\
+    &= ((l)\phi,0x') \phi_{\mathcal{L}(T_2)}\\
+    &= (l)\phi \cdot 0x' .
+\end{align*}
+As \(l0\in \mathcal{L}(T')\)  and \((l0)\phi'=(l)\phi 0\) by Definition~\ref{def:tree_pair_elementary_expansions}, it follows that similarly
+\begin{align*}
+    (x)f_{P'}&=(l0x')\phi_{\mathcal{L}(T_1')}^{-1} \circ (\phi' \oplus \operatorname{id}_{\mathfrak{C}})\circ \phi_{\mathcal{L}(T_2')}\\
+    &= (l0,x')(\phi' \oplus \operatorname{id}_{\mathfrak{C}})\circ \phi_{\mathcal{L}(T_2')}\\
+    &= ((l0)\phi',x') \phi_{\mathcal{L}(T_2')}\\
+    &= (l0)\phi' \cdot x'\\
+    &= (l)\phi  0\cdot x'\\
+    &= (l)\phi\cdot  0 x'.
+\end{align*}
+So \((x)f_P=(x)f_{P'}\) as required.
+
+Case 3: Suppose that \(p=l1\). Similar to Case 2.
+\end{proof}
+
+\begin{definition}\label{def:tree_expansions}
+\uses{lem:leaves_of_elementary_expanion}
+    We say that a tree \(T'\) is an \emph{expansion} of a tree \(T\) if there is a finite sequence of trees \(T=T_0, T_1,\ldots, T_k= T'\) where \(T_{i+1}\) is an elementary expansion of \(T_i\) for all \(i<k\).
+\end{definition}
+
+\begin{lemma}\label{lem:common_tree_expansions}
+\uses{def:tree_expansions}
+Suppose that \(T\) and \(U\) are finite rooted binary trees.
+Then there are expansions \(T'\) and \(U'\) of \(T\) and \(U\) respectively such that \(T'=U'\)
+\end{lemma}
+\begin{proof}
+    \luna{todo finish}
+\end{proof}
+
+\begin{definition}\label{def:tree_pair_expansions}
+\uses{def:tree_pair_elementary_expansions}
+    We say that a tree pair \(P'\) is an \emph{expansion} of a tree pair \(P\) if there is a finite sequence of tree pairs \(P=P_0, P_1,\ldots, P_k= P'\) where \(P_{i+1}\) is an elementary expansion of \(P_i\) for all \(i<k\).
+\end{definition}
+
+
+
+\begin{lemma}\label{lem:map_eqiv_to_expansion_equiv}
+\uses{def:tree_pair_to_prefix_replacement,lem:common_tree_expansions}
+    Suppose that \(P\) and \(Q\) are tree pairs such that \(f_P=f_Q\).
+    There there are expansions \(P'\) and \(Q'\) of \(P\) and \(Q\) respectively such that \(P'=Q'\).
+\end{lemma}
+\begin{proof}
+    \luna{todo finish}
+\end{proof}
+
+\begin{definition}\label{lem:tree_pair_equivalence}
+\uses{def:tree_pair_expansions}
+    We say that two tree pairs \(P\) and \(Q\) are \emph{equivalent} if they have a common expansion.
+    We denote this by \(P\sim Q\).
+\end{definition}
+\begin{theorem}\label{thm:Vtree_Vcant_bijection}
+\uses{lem:tree_pair_equivalence,lem:map_eqiv_to_expansion_equiv,lem:expansions_are_safe}
+    If \(P\) and \(Q\) are tree pairs, then \(P\sim Q\) if and only if \(f_P=f_Q\).
+\end{theorem}
+\begin{proof}
+    \luna{todo finish}
+\end{proof}
+\begin{corollary}\label{cor:tree_equiv_is_equiv}
+\uses{thm:Vtree_Vcant_bijection}
+The relation \(\sim\) on tree pairs is an equivalence relation.
+\end{corollary}
+
+\begin{lemma}\label{lem:cat_comp}
+\uses{def:tree_pair_to_prefix_replacement}
+If \((T_1,T_2,\phi)\) and \((U_1,U_2,\psi)\) are tree pairs with \(T_2=U_2\), then \((T_1,U_2,\phi \psi)\) is a tree pair and
+\[f_{(T_1,T_2,\phi)}f_{(U_1,U_2,\psi)}=f_{(T_1,U_2,\phi \psi)}.\]
+\end{lemma}
+\begin{proof}
+    \luna{todo prove}
+\end{proof}
+\begin{lemma}\label{lem:compable_expansion}
+\uses{lem:common_tree_expansions,def:tree_pair_expansions}
+If \(P\) and \(Q\) are tree pairs then there are expansions \(P'\) and \(Q'\) of \(P\) and \(Q\) respectively such that the second tree of \(P'\) is equal to the first tree of \(Q\).
+\end{lemma}
+\begin{proof}
+    \luna{todo prove}
+\end{proof}
+
+\begin{lemma}\label{lem:V_is_semigroup}
+\uses{lem:compable_expansion}
+    If \(P\) and \(Q\) are tree pairs, then there is a tree pair \(R\) such that \(f_Pf_Q=f_R\). 
+\end{lemma}
+\begin{proof}
+    \luna{todo prove}
+\end{proof}
+\begin{lemma}\label{lem:V_has_inverses}
+\uses{def:tree_pair_to_prefix_replacement}
+    If \(P\) is a tree pair, then \(f_P\) is a bijection and there is a tree pair \(Q\) such that \(f_P^{-1}=f_Q\).
+\end{lemma}
+\begin{proof}
+    \luna{todo prove}
+\end{proof}
+
+\begin{definition}\label{def:V_cantor}
+\uses{lem:V_is_semigroup, def:tree_pair_to_prefix_replacement}
+    We define \(V_{cantor}\) to be the set of functions \(\makeset{f_{P}}{\(P\) is a tree pair}\). We give this set the binary operation of composition of functions and the unary operation of inversion.
+    These operations are well-defined by Lemma~\ref{lem:V_is_semigroup} and Lemma~\ref{def:tree_pair_to_prefix_replacement}.
+\end{definition}
+\begin{definition}\label{def:V_tree_pair}
+    We define \(V_{tree}\) to be the set of \(\sim\) equivalence classes of finite rooted binary trees.
+    We define a binary operations on this set by \([P]_{\sim}[Q]_{\sim}=[R]_{\sim}\) if \(f_Pf_Q=f_R\) and a unary operation by \([P]_{\sim}^{-1}=[Q]_{\sim}\) if \(f_P^{-1}=f_Q\).
+    These operations are well-defined by Definition~\ref{def:V_cantor} and Theorem~\ref{thm:Vtree_Vcant_bijection}.
+\end{definition}
+\section{Jonsson-Tarski Algebra Perspective}
+
+\luna{I probably shouldn't be constantly conflating an algebra with its underlying set but I don't know the standard ways of handling such situations in rocq so for now I will do this anyway}
+\begin{definition}\label{def:Jonsson-Tarski_Algebra}
+    A Jonsson-Tarski Algebra is a 4-tuple \((A,\lambda,\alpha_0,\alpha_1)\) such that \(A\) is a set, \(\lambda\) is a binary operation on \(A\), \(\alpha_0, \alpha_1\) are unary operations on \(A\) and the following hold for all \(x,y\in A\):
+    \[(x\alpha_0, x\alpha_1)\lambda = x, \quad (x,y)\lambda\alpha_0=x \quad \text{ and }\quad(x,y)\lambda\alpha_1=y.\]
+\end{definition}
+\begin{definition}\label{def:jt_homomorphism}
+\uses{def:Jonsson-Tarski_Algebra}
+    If \(A\) and \(B\) are Jonsson-Tarski algebras and \(\phi:A\to B\) is a function, then we say that \(\phi\) is a \emph{homomorphism} if for all \(x,y\in A \) we have
+    \[(x)\phi\alpha_0=(x\alpha_0)\phi, \quad (x)\phi\alpha_1=(x\alpha_1), \quad \text{ and }\quad (x\phi,y\phi )\lambda= (x,y)\lambda \phi.\]
+    \luna{maybe homomorphisms and isomorphisms are already defined in some general sense in preexisting packages}
+\end{definition}
+\begin{definition}\label{def:free_basis_jt}
+\uses{def:jt_homomorphism}
+If \(A\) is a Jonsson-Tarski algebra and \(X\subseteq A\), then we say that \(X\) is a \emph{free-basis} for \(A\) if for all Jonsson-Tarski algebras \(B\) and functions \(\phi:X\to B\), there is a unique homomorphism \(\tilde{\phi}:A \to B\) such that \((x)\tilde{\phi}=(x)\phi\) for all \(x\in X\).
+\end{definition}
+
+\begin{definition}\label{def:jt_expression}
+\rocq{Thompson.codes.jt_expression}
+
+A \emph{Jonsson-Tarski expression} is either
+\begin{itemize}
+    \item The empty expression;
+    \item \(\text{Left}\ E\) where \(E\) is a Jonsson-Tarski expression;
+    \item \(\text{Right}\ E\) where \(E\) is a Jonsson-Tarski expression;
+    \item \(\text{Node}\ L\ R\) where \(E\) is a Jonsson-Tarski expression.
+\end{itemize}
+\end{definition}
+
+\begin{definition}\label{def:jt_expression}
+\rocq{Thompson.codes.jt_expression}
+A \emph{reduced Jonsson-Tarski expression} is either
+\begin{itemize}
+    \item The empty expression;
+    \item \(\text{Left}\ E\) where \(E\) is a Jonsson-Tarski expression not of the form $\text{Node}\ L\ R$;
+    \item \(\text{Right}\ E\) where \(E\) is a Jonsson-Tarski expression not of the form $\text{Node}\ L\ R$;
+    \item \(\text{Node}\ L\ R\) where there is no Jonsson-Tarski expression \(E\) with \(L= \text{Left}\ E\) and \(R= \text{Right}\ E\).
+\end{itemize}
+\end{definition}
+\begin{lemma}\label{lem:free-jt-algebra}
+    \uses{def:jt_expression}
+    The family of reduced Jonsson-Tarski expressions with the obvious operations form a Jonsson Tarski algebra \(\mathcal{J}\).
+\end{lemma}
+    \begin{proof}
+        \luna{todo prove}
+    \end{proof}
+\begin{lemma}\label{lem:freejt_is_free}
+\uses{lem:free-jt-algebra}
+    The algebra \(\mathcal{J}\)from Lemma~\ref{lem:free-jt-algebra} is freely generated by the empty expression.
+\end{lemma}
+
+\begin{definition}\label{def:V_jonsson_tarski}
+\uses{lem:freejt_is_free}
+    The group \(V_{jt}\) is the automorphism group of \(\mathcal{J}\).
+\end{definition}
 
 
 \chapter{Thompsons groups and monoids}
