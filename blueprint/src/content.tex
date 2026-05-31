@@ -680,7 +680,7 @@ If \(P\) and \(Q\) are tree pairs then there are expansions \(P'\) and \(Q'\) of
 \end{definition}
 \begin{definition}\label{def:free_basis_jt}
 \uses{def:jt_homomorphism}
-If \(A\) is a Jonsson-Tarski algebra and \(X\subseteq A\), then we say that \(X\) is a \emph{free-basis} for \(A\) if for all Jonsson-Tarski algebras \(B\) and functions \(\phi:X\to B\), there is a unique homomorphism \(\tilde{\phi}:A \to B\) such that \((x)\tilde{\phi}=(x)\phi\) for all \(x\in X\).
+If \(A\) is a Jonsson-Tarski algebra and \((x_0, x_1,\ldots, x_{k-1})\) is a sequence of elements of \(A\), then we say that \((x_0, x_1,\ldots, x_{k-1})\in A^k\) is a \emph{free-basis} for \(A\) if for all Jonsson-Tarski algebras \(B\) and functions \(\phi:\{0,1,\ldots, k-1\}\to B\), there is a unique homomorphism \(\tilde{\phi}:A \to B\) such that \((x_i)\tilde{\phi}=(i)\phi\) for all \(i<k\).
 \end{definition}
 
 \begin{definition}\label{def:jt_expression}
@@ -688,7 +688,9 @@ If \(A\) is a Jonsson-Tarski algebra and \(X\subseteq A\), then we say that \(X\
 
 A \emph{Jonsson-Tarski expression} is either
 \begin{itemize}
-    \item The empty expression;
+    \item The empty expression \(
+    \varepsilon
+    \);
     \item \(\text{Left}\ E\) where \(E\) is a Jonsson-Tarski expression;
     \item \(\text{Right}\ E\) where \(E\) is a Jonsson-Tarski expression;
     \item \(\text{Node}\ L\ R\) where \(E\) is a Jonsson-Tarski expression.
@@ -706,7 +708,7 @@ A \emph{reduced Jonsson-Tarski expression} is either
 \end{itemize}
 \end{definition}
 \begin{lemma}\label{lem:free-jt-algebra}
-    \uses{def:jt_expression,def:reduced_jt_expression}
+\uses{def:jt_expression,def:reduced_jt_expression}
     The family of reduced Jonsson-Tarski expressions with the obvious operations form a Jonsson Tarski algebra \(\mathcal{J}\).
 \end{lemma}
     \begin{proof}
@@ -725,6 +727,44 @@ A \emph{reduced Jonsson-Tarski expression} is either
 \end{definition}
 
 
+\begin{lemma}\label{lem:free_base_manip}
+    \uses{def:free_basis_jt}
+    Suppose that \(J\) is a Jonsson-Tarski algebra and \((x_0, x_1, \ldots, x_{k-1})\in J^k\).
+    Then \((x_0, x_1, \ldots, x_{k-1})\) is a free basis for \(J\) if and only if \((x_0, x_1, \ldots, x_{k-2},(x_{k-1})\alpha_0,(x_{k-1})\alpha_1)\) is a free-basis for \(J\).
+\end{lemma}
+\begin{proof}
+    \luna{todo prove}
+\end{proof}
+
+\begin{definition}\label{def:string_alphas}
+\uses{def:Jonsson-Tarski_Algebra}
+    If \(A\) is a Jonsson-Tarski algebra and \(w=w_0w_1\ldots w_{k-1}\in \{0,1\}^*\), then we denote \(\alpha_{w_0}\alpha_{w_1}\ldots \alpha_{w_{k-1}}\) by \(\alpha_w\) .
+\end{definition}
+\begin{lemma}\label{lem:free_base_manip}
+    \uses{def:free_basis_jt, def:complete_prefix_code, thm:tree=complete_prefix_code}
+    Suppose that \(J\) is a Jonsson-Tarski algebra, \(x\in J\), and \(P\) is a complete prefix code.
+    Then \((x)\) is a free basis for \(J\) if and only if \((x_p)_{p\in P}\) is a free-basis for \(J\).
+\end{lemma}
+\begin{proof}
+    \luna{todo prove}
+\end{proof}
+
+\begin{lemma}\label{lem:finding_free_bases}
+    \uses{lem:free_base_manip}
+    Suppose that \(v\in V_{jt}\), then there are (ordered) complete prefix codes \(P_1\) and \(P_2\) such that \(((\varepsilon)\alpha_{p} v)_{p\in P_1}=((\varepsilon)\alpha_{p})_{p\in P_2}\).
+\end{lemma}
+\begin{proof}
+    \luna{todo prove}
+\end{proof}
+
+
 \chapter{Thompsons groups and monoids}
 
+\begin{theorem}\label{thm:V_equivalences}
+    \uses{lem:finding_free_bases,def:V_jonsson_tarski,def:V_tree_pair,def:V_cantor}
+    The groups \(V_{tree}\), \(V_{cantor}\) and \(V_{jt}\) are isomorphic.
+\end{theorem}
+\begin{proof}
+    \luna{todo prove}
+\end{proof}
 \chapter{Presentations}
