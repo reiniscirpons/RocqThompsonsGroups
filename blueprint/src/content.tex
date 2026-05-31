@@ -740,8 +740,8 @@ A \emph{reduced Jonsson-Tarski expression} is either
 \uses{def:Jonsson-Tarski_Algebra}
     If \(A\) is a Jonsson-Tarski algebra and \(w=w_0w_1\ldots w_{k-1}\in \{0,1\}^*\), then we denote \(\alpha_{w_0}\alpha_{w_1}\ldots \alpha_{w_{k-1}}\) by \(\alpha_w\) .
 \end{definition}
-\begin{lemma}\label{lem:free_base_manip}
-    \uses{def:free_basis_jt, def:complete_prefix_code, thm:tree=complete_prefix_code}
+\begin{lemma}\label{lem:free_base_manip_codes}
+    \uses{def:free_basis_jt, def:complete_prefix_code, thm:tree=complete_prefix_code,lem:free_base_manip}
     Suppose that \(J\) is a Jonsson-Tarski algebra, \(x\in J\), and \(P\) is a complete prefix code.
     Then \((x)\) is a free basis for \(J\) if and only if \((x_p)_{p\in P}\) is a free-basis for \(J\).
 \end{lemma}
@@ -767,4 +767,13 @@ A \emph{reduced Jonsson-Tarski expression} is either
 \begin{proof}
     \luna{todo prove}
 \end{proof}
+\begin{definition}\label{def:lexorder_cantor}
+\uses{def:Cantor_space}
+Suppose that \(x,y\in \mathfrak{C}\). We write \(x\leq y\) if either \(x=y\) or \((n)x<(n)y\) where \(n=\min(\makeset{m\in \mathbb{N}}{\((m)x\neq (m)y\)})\).
+\end{definition}
+\begin{definition}\label{def:F}
+    We define \(F_{cantor}\) to be the subgroup \[\makeset{f\in V_{cantor}}{for all \(x,y\in \mathfrak{C}\), we have \(x\leq y \iff (x)f\leq (y)f\)}\]
+    of \(V_{cantor}\). We then define \(F_{tree}\) and \(F_{jt}\) via Theorem~\ref{thm:V_equivalences}.
+    \luna{luna is getting increasingly lazy, we should define explicit isomorphisms and prove that this set is closed under composition and inversion and stuff}
+\end{definition}
 \chapter{Presentations}
