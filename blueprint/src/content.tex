@@ -22,73 +22,66 @@
 % 11. Equivalence tree pairs and cantor 
 % 12. Do rational group instead?
 
+\chapter*{Glossary of symbols and notation}
+
+In this chapter we list the symbols and notations used in the remainder of the document,
+along with a brief explanation of their meaning.
+
+\begin{table}[h]
+  \centering
+  \begin{tabular}{c|l}
+    Symbol & Meaning  \\
+    \hline
+    $\N = \{0, 1,2,\ldots\}$ & The naturals, note that we include $0$, following the French\\
+    $\bool$ & The booleans, c.f. \cref{sec:prefix_codes}\\
+    $\C$ & The Cantor space, c.f. \cref{def:Cantor_space}\\
+    $A, B, C$ & Variables for general sets\\
+    $A^\ast$ & The set of finite words with alphabet $A$, c.f. \cref{sec:prefix_codes}\\
+    $A\rightarrow B, A^B$ & The set of functions from $A$ to $B$\\
+    $x, y, z$ & Variables for elements of general sets\\
+    $m, n$ & Variables for general elements of $\N$\\
+    $i, j, k$ & Variables for indices, usually elements of $\N$\\
+    $a, b, c$ & Variables for letters of an alphabet, usually letters of $\bool$\\
+    $u, v, w$ & Variables for finite words, usually elements of $\bool^\ast$\\
+    $uv, u\cdot v$ & Concatenation of words\\
+    $\varepsilon$ & The empty word\\
+    $|u|$ & The length of a word\\
+    $u \preceq v$ & The relation ``$u$ is a prefix of $v$''\\
+    $u|_m$ & The length $m$ prefix of $u$, c.f. \cref{def:restriction_of_finite_string}\\
+    $P, Q$ & Variables for prefix codes, c.f. \cref{def:prefix_code}\\
+    $f, g, h$ & Variables general functions and infinite words, usually elements of $\C$\\
+    $(x)f$ & Function application, note that functions apply on the right\\
+    $f(x)$ & Operator application, note that operators apply on the left\\
+    $\id_A$ & The identity function $\id_A: A\rightarrow A$\\
+    $f^m$ & The $m$-fold iteration of a function $f: A \rightarrow A$, note $f^0 = \id_A$ and $f^1 = f$\\
+    $uf, u\cdot f$ & The concatenation of a word $u\in \bool^\ast$ with an element $f\in \C$, c.f. \cref{def:concat_fin_inf}\\
+    $f|_m$ & The $m$-restriction of $f\in \C$, c.f. \cref{def:restriction_of_infinite_string}\\
+    $\sigma$ & The shift map, c.f. \cref{def:cantor_shift}
+  \end{tabular}
+  \caption{Annotated list of symbols}%
+  \label{tab:glossary_of_symbols}
+\end{table}
+
 \chapter{Preliminaries}
 
 In this section we rehash some basics of the relations between prefix codes, trees and Cantor sets.
 
-\section{Prefix codes}
+\section{Prefix codes}\label{sec:prefix_codes}
 
-Let $\{0,1\}$ be a set. Recall that a word over $\{0,1\}$ is a sequence of elements of $\{0,1\}$, the set of all words over $\{0,1\}$
-including the empty word is denoted by $\{0,1\}^\ast$. We will write $xy$ for the concatenation of words $x, y\in \{0,1\}^\ast$. We denote the empty word by \(\varepsilon\).
-We denote the length of a word \(x\in \{0,1\}^*\) by \(|x|\).
-A word $x$ is a \emph{prefix} of a word $y$ if there exists a word $z$ such that $xz = y$. We write $x \preceq y$
-to denote that $x$ is a prefix of $y$.
-\begin{definition}%
-  \label{def:comparable}
- \rocq{Thompson.codes.comparable}
-  \rocqok{}
-  Let $x, y\in A^\ast$. We say that $x$ and $y$ are \emph{comparable} if $x$ is a prefix of $y$ or vice-versa, i.e.
-  $x \preceq y$ or $y \preceq x$ holds. If $x$ and $y$ are not comparable, we say they are \emph{incomparable}.
-\end{definition}
+Let $ \bool = \{0,1\}$ be the set of booleans. 
+Recall that a word over $\bool$ is a finite sequence of elements of $\bool$, the set of all words over $\bool$
+including the empty word is denoted by $\bool^\ast$. We will write $u \cdot v$ or simply $uv$ for the concatenation of words $u, v\in \bool^\ast$.
+We denote the empty word by \(\varepsilon\).
+We denote the length of a word \(u \in \bool^*\) by \(|u|\).
+Hence for every word $u \in \bool^\ast$ such that $|u| = m$ there exist letters
+$a_0,\ldots, a_{m-1}\in \bool$ such that $u = a_1\cdots a_{m-1}$, where we take the convention
+that the empty concatenation equals the empty word. The letters $a_0, \ldots, a_{m-1}$
+are also uniquely determined by $u$.
 
-\begin{lemma}%
-  \label{lem:comparable_symm}
-  \uses{def:comparable}
-  \rocq{Thompson.codes.comparable_symm}
-  \rocqok{}
-  Let $x, y\in A^\ast$. Then $x$ and $y$ are comparable if and only if $y$ and $x$ are comparable.
-\end{lemma}
-\begin{proof}
-  \rocqok{}
-  The proof follows immediately from the definition, as ``or'' is symmetric.
-\end{proof}
-
-An important role in the theory of Thompsons groups is played by prefix codes, which we now define.
-
-\begin{definition}%
-  \label{def:prefix_code}
-  \uses{def:comparable}
-  \rocq{Thompson.codes.prefix_code}
-  \rocqok{}
-  A prefix code over $\{0,1\}$ is a set of words $P$ over $\{0,1\}$ such that every pair of distinct
-  words $w_1, w_2\in P$ are incomparable.
-\end{definition}
-
-
-
-\begin{definition}\label{def:concat_letter_set}
-    Let \(x\in \{0,1\}\) and \(S\subseteq \{0,1\}^*\) be finite. We denote the set \(\makeset{xs}{\(s\in S\)}\) by \(xS\).
-\end{definition}
-
-\reinis{Finish this section}
-
-
-\section{The Cantor set}
-The Thompson's groups act faithfully on the Cantor space of all infinite binary sequences. 
-This perspective makes some proofs easier so we will go back and forth between the two perspectives.
-\begin{definition}\label{def:Cantor_space}
-  An \emph{infinite word} over \(\{0,1\}\) is a function \(w:\mathbb{N}\to \{0,1\}\). We denote the set of all such infinite words by \(\{0,1\}^{\mathbb{N}}\).
-  This set is viewed as a topological space with the product topology using the discrete topology on \(\{0,1\}\).
-  We refer to this topological space as the \emph{Cantor space} and denote it by \(\mathfrak{C}\).
-  \luna{presumably rocq has the product topology built in?}
-  \reinis{Not built in, but the \texttt{mathcomp-analysis} library has it:
-  \url{https://math-comp.github.io/analysis/htmldoc/1_16_0/mathcomp.analysis.topology_theory.function_spaces.html\#prod_topology} - this is the type that the topology is defined on, i.e. the set of points in the space, in this case \texttt{forall i, T i} means that its the set of functions $f: I \rightarrow \bigcup_{i\in I} T_i$ mapping $i\in I$ to an element in $T_i$,
-  the actual definition of the topology is here:
-  \url{https://math-comp.github.io/analysis/htmldoc/1_16_0/mathcomp.analysis.topology_theory.function_spaces.html\#product_topology_def}, its  going a bit over my head to be honest, but it should be possible to figure out by following the links in the documentation.
-  }
-  \luna{nice!}
-\end{definition}
-Recall that an element of \(w\in \{0,1\}^*\) is a finite sequence in the alphabet \(\{0,1\}\). There are many equivalent ways to formally define a finite sequence. For our purposes it will be convenient to view an element \(w\in \{0,1\}^*\) as a function whose domain is \(\{0,1,\ldots, n-1\}\) where \(n\) is the length of \(w\).
+By minor abuse of notation, we will identify the word $u$ with the function in $u: \{0, \ldots, m-1\} \rightarrow \bool$ given by
+$(i)u = a_i$ for each $i \in \{0, \ldots, m-1\}$. We call this the \emph{indexing} function of $u$.
+Therefore $(i)u$ is always the $i$-th letter of $u$. Note that care must be
+taken when using this notation to avoid indexing the word past its length.
 \luna{does rocq already have a way of going back and forth between equivalent notions of finite sequence?}
 \reinis{Yes, usually lemmas involving \texttt{reflect} prove this (going back and forth between computation and definition), they usually end with a letter ``P'' in Rocq sources (for ``Property''?).}
 \reinis{
@@ -97,135 +90,283 @@ Rocq has a function \texttt{nth} which returns the $n$-th element of a sequence,
 says something like: ``being in a sequence is equivalent to being in the image''.}
 \luna{nice!}
 
+For every \(u\in \bool^\ast\) and every \(A\subseteq \bool^*\), we write $uA$ for the
+set \(\makeset{uv}{\(v\in A\)}\) by \(uA\).
+A word $u$ is a \emph{prefix} of a word $v$ if there exists a word $w$ such that $uw = v$. We write $u \preceq v$
+to denote that $u$ is a prefix of $v$. In other words, $u \preceq v$ if and only if $v \in u\bool^\ast$.
+
+\reinis{glue}
+
+\begin{definition}\label{def:restriction_of_finite_string}
+    Let \(u\in \bool^*\), let \(m = |u|\) and let $a_0, \ldots, a_{m-1} \in \bool$ be such that
+    $u = a_0\cdots a_{m-1}$. For each $n < m$, the \emph{length $n$ prefix} of $u$
+    is the word $u|_n = a_0 \cdots a_{n-1}$. When $n = 0$, $u|_0 = \varepsilon$.
+    The indexing function of \(u|_n\) is given by \((i)v|_n=(i)v\) for all \(i\in\{0, \ldots, n-1\}\).
+\end{definition}
+The notation $u|_n$ is borrowed from the notation for restricting a function to a domain. Indeed the indexing function
+of $u|_n$ is precisely the restriction of the indexing function of $u$ to $\{0, \ldots, n-1\}$.
+Hence we will sometimes refer the the length $n$ prefix of $u$ as the \emph{$n$-restriction} of $u$.
+
+\begin{lemma}\label{lem:finite_cone_prefixes}
+\uses{def:restriction_of_finite_string}
+    Suppose that \(u, v\in \bool^*\). Then \(v\in u\bool^*\) if and only if \(m\leq |v|\) and \(u=v|_{m}\), where $m = |u|$.
+\end{lemma}
+\begin{proof}
+    ($\Leftarrow$) Suppose that \(m\leq |u|\) and \(u = v|_{m}\). Let $n = |v|$ and
+    let $a_0, \ldots, a_{m-1}, b_0, \ldots, b_{n-1}\in \bool$ be such that
+    $u = a_0 \cdots a_{m-1}$ and $v = b_1 \cdots b_{n-1}$. Since $u = v|_{m}$, it follows that
+    $a_i = b_i$ for all $i \in \{0, \ldots, m-1\}$.
+    In particular, letting $w = b_{m} \cdots b_{n-1}$, we have that $v = uw \in u\bool^\ast$,
+    as required.
+
+    $(\Rightarrow)$ Suppose that \(v\in u\bool^*\). It follows that there is \(w\in \bool^*\) such that \(v = uw\).
+    Hence \(|v|=|u|+|w|\geq |u| = m\). Moreover $v|_m = uw|_m = u$, as required.
+\end{proof}
+
+\reinis{glue}
+
+\begin{definition}%
+  \label{def:comparable}
+ \rocq{Thompson.codes.comparable}
+  \rocqok{}
+  Let $u, v\in \bool^\ast$. We say that $u$ and $v$ are \emph{comparable} if $u$ is a prefix of $v$ or vice-versa, i.e.
+  $u \preceq v$ or $v \preceq u$ holds. If $u$ and $v$ are not comparable, we say they are \emph{incomparable}.
+\end{definition}
+
+\begin{lemma}%
+  \label{lem:comparable_symm}
+  \uses{def:comparable}
+  \rocq{Thompson.codes.comparable_symm}
+  \rocqok{}
+  Let $u, v\in \bool^\ast$. Then $u$ and $v$ are comparable if and only if $v$ and $u$ are comparable.
+\end{lemma}
+\begin{proof}
+  \rocqok{}
+  The proof follows immediately from the definition, as ``or'' is symmetric.
+\end{proof}
+
+
+
+An important role in the theory of Thompsons groups is played by prefix codes, which we now define.
+
+\begin{definition}%
+  \label{def:prefix_code}
+  \uses{def:comparable}
+  \rocq{Thompson.codes.prefix_code}
+  \rocqok{}
+  A prefix code over $\bool$ is a set of words $P\subseteq \bool^\ast$ such that any two distinct
+  words in $P$ are incomparable.
+\end{definition}
+
+
+
+\reinis{Finish this section}
+
+\section{The Cantor set}
+The Thompson's groups act faithfully on the Cantor space of all infinite binary sequences. 
+This perspective makes some proofs easier so we will go back and forth between the two perspectives.
+\begin{definition}\label{def:Cantor_space}
+  An \emph{infinite word} over \(\bool\) is an infinite sequence of elements in
+  $\bool$. Equivalently, we can think of such an infinite word as a
+  function \(f:\N\to \bool\).
+  The set of all infinite words over $\bool$ forms a topological space with the
+  product topology induced by the discrete topology on \(\bool\).
+  We refer to this topological space of infinite words over $\bool$ as the
+  \emph{Cantor space} and denote it by \(\C\).
+  \luna{presumably rocq has the product topology built in?}
+  \reinis{Not built in, but the \texttt{mathcomp-analysis} library has it:
+  \url{https://math-comp.github.io/analysis/htmldoc/1_16_0/mathcomp.analysis.topology_theory.function_spaces.html\#prod_topology} - this is the type that the topology is defined on, i.e. the set of points in the space, in this case \texttt{forall i, T i} means that its the set of functions $f: I \rightarrow \bigcup_{i\in I} T_i$ mapping $i\in I$ to an element in $T_i$,
+  the actual definition of the topology is here:
+  \url{https://math-comp.github.io/analysis/htmldoc/1_16_0/mathcomp.analysis.topology_theory.function_spaces.html\#product_topology_def}, its  going a bit over my head to be honest, but it should be possible to figure out by following the links in the documentation.
+  }
+  \luna{nice!}
+\end{definition}
+
+With this convention in place, we are able to define a left action of finite words on infinite words in \cref{def:concat_fin_inf}.
+
 \begin{definition}\label{def:concat_fin_inf}
 \uses{def:Cantor_space}
-    Suppose that \(w\in \{0,1\}^*\) and \(x\in \{0,1\}^{\mathbb{N}}\). We write \(wx\) to denote the map from \(\mathbb{N}\) to \(\{0,1\}\) defined by
-    \[(n)wx=\begin{cases}
-        (n)w & \text{ if }n<|w|\\
-        (n-|w|)x & \text{ if }n\geq |w|.        
-    \end{cases}.\]
-    More generally. If \(S\subseteq \mathfrak{C}\), then we write \(wS\) for the set \(\makeset{wx}{\(x\in S\)}\).
+    Suppose that \(u\in \bool^*\) and \(f\in \C\). The \emph{concatenation} of $u$ and $f$ is the infinite word
+    \(u \cdot f\in \bool^\N\) given by
+    \[
+        (n)(u\cdot f)=\begin{cases}
+        (n)u & \text{if }n<m\\
+        (n-m)f & \text{otherwise},
+    \end{cases}\]
+    where $m = |u|$.
+    More generally, if \(A\subseteq \mathfrak{C}\), then we write \(uA\) for the set \(\makeset{u\cdot f}{\(f\in A\)}\).
 \end{definition}
+
+Intuitively, the word $u\cdot f$ is obtained by concatenating the finite word $u$ to the left of the infinite word $f$.
+We will occasionally write $uf$ instead of $u\cdot f$ to simplify notation. Concatenation is associative, as we show in
+\cref{lem:concat_fin_infA}.
+
+\begin{lemma}%
+    \label{lem:concat_fin_infA}
+    Suppose that $u, v\in \bool^\ast$ and $f\in \C$. Then $u(vf) = (uv)f$.
+\end{lemma}
+\begin{proof}
+    Let $|u| = m$ and let $|v| = n$. Let $i \in \N$ and consider 3 cases.
+    \begin{enumerate}[1)]
+        \item First assume that $i < m$, then
+        \[
+            (i)u(vf) = (i)u = (i)uv = (i)(uv)f
+        \]
+        as required.
+        \item Assume that $m \leq i < n+m$, then
+        \[
+            (i)u(vf) = (i-m)vf = (i-m)v = (i)(uv) = (i)(uv)f
+        \]
+        as required.
+        \item Assume that $n + m \leq i$, then
+        \[
+            (i)u(vf) = (i-m)vf = (i - m - n)f = (i)(uv)f.
+        \]
+    \end{enumerate}
+    This completes the proof.
+\end{proof}
 
 \begin{definition}\label{def:cones}
 \uses{def:concat_fin_inf}
-Suppose that \(w\in \{0,1\}^*\). We define the \emph{cone} of \(w\) to be the set
-\(w\mathfrak{C}\).
+Suppose that \(u\in \bool^*\). The \emph{cone} of \(u\) is the set \(u\C\).
 \end{definition}
 
-Recall that for \(v,w\in \{0,1\}^*\), we write \(w\preceq v\) if \(v\in w\{0,1\}^*\).
-Hence the following definition.
+Recall that for \(u, v\in \bool^*\), we write \(u\preceq v\) if \(v\in u\bool^*\).
+Generalizing this, we define what it means for a finite word to be the prefix of an infinite
+word in \cref{def:Cantor_space}.
 \begin{definition}\label{def:finite_prefix_of_cantor}
 \uses{def:Cantor_space}
-We say that \(w\in \{0,1\}^*\) is a \emph{prefix} of \(x\in \{0,1\}^{\mathbb{N}}\) if \(x\in w\mathfrak{C}\). We write $w \preceq x$
-to denote that $w$ is a prefix of $x$.
+We say that \(u\in \bool^*\) is a \emph{prefix} of \(f\in \C\) if \(f\in w\mathfrak{C}\). We write $u \preceq f$
+to denote that $u$ is a prefix of $f$.
 \end{definition}
 
 \begin{definition}\label{def:restriction_of_infinite_string}
 \uses{def:Cantor_space}
-If \(x\in \mathfrak{C}\) and \(n\in \mathbb{N}\), then we write \(x|_n\) for the map with domain \(\{0,1, \ldots, n-1\}\) with \((i)x|_n=(i)x\) for all \(i<n\).
+Let \(f\in \mathfrak{C}\) and let \(m\in \mathbb{N}\). The \emph{$m$-restriction} of $f$ is the word
+$f_m$ of length $m$ given by \(f|_m = (0)f(1)f\cdots (m-1)f \in \bool^\ast\).
+Its indexing function is given by \((i)f|_m=(i)f\) for all \(i\in \{0, \ldots, m-1\}\).
 \end{definition}
-\begin{definition}\label{def:restriction_of_finite_string}
-If \(v\in \{0,1\}^*\) and \(n\in \mathbb{N}\) satisfies \(n\leq |v|\), then we write \(v|_n\) for the map with domain \(\{0,1, \ldots, n-1\}\) with \((i)v|_n=(i)v\) for all \(i<n\).
+
+\begin{definition}\label{def:cantor_shift}
+\uses{def:Cantor_space}
+    The \emph{shift map} of $\C$ is the function $\sigma: \C \rightarrow \C$, mapping each $f\in \C$ to the function $(f)\sigma$
+    given by $(m)(f)\sigma = (m+1)f$ for all $m\in \N$.
 \end{definition}
+
+The name for $\sigma$ refers to the fact that the shift map ``shifts'' every letter of $f$ to the right, discarding the first letter, if we think of
+$f$ as an infinite sequence.
+While both restrictions and shifts are lossy, every elements of $\C$ can be recovered from  a combination of a restriction and a shift, as we show in
+\cref{lem:cantor_restriction_shiftK}.
+
+\begin{lemma}\label{lem:cantor_restriction_shiftK}
+\uses{def:cantor_shift,def:restriction_of_infinite_string}
+    Let $f\in C$ and $m \in \N$. Then $f = f|_m \cdot (f)\sigma^m$.
+\end{lemma}
+\begin{proof}
+    Let $n \in \N$ and consider two cases. If $n < m$, then
+    \[(n) (f|_m \cdot (f)\sigma^m) = (n)f|_m = (n)f.\]
+    Otherwise, $n \geq m$ and so
+    \[(n)(f|_m \cdot (f)\sigma^m) = (n-m)(f)\sigma^m = (n-m+1)(f)\sigma^{m-1} = \cdots = (n)f,\]
+    where the final sequence of equalities proceeds by straightforward induction. This completes the proof.
+\end{proof}
 
 The following description of cones is often more helpful than the definition.
 \begin{lemma}\label{lem:cone_prefixes}
 \uses{def:finite_prefix_of_cantor,def:cones,def:restriction_of_infinite_string}
-    Suppose that \(w\in \{0,1\}^*\) and \(x\in \mathfrak{C}\). Then \(x\in w\mathfrak{C}\) if and only if \(w=x|_{|w|}\).
+    Suppose that \(u\in \bool^*\) and \(f\in \mathfrak{C}\). Then \(f\in u\mathfrak{C}\) if and only if \(u=f|_m\),
+    where $m = |u|$.
 \end{lemma}
 \begin{proof}
-    \((\Leftarrow):\) Suppose that \(w =x|_{|w|}\). Define \(x':\mathbb{N}\to \{0,1\}\) by \((n)x'=(n+|w|)x\).
-    As \(wx'\in w\mathfrak{C}\), we need only show that \(wx'=x\). Let \(n\in \mathbb{N}\) be arbitrary. We need only show that \((n)wx'=x\). If \(n<|w|\), then we have \((n)wx'=(n)w=(n)x|_{|w|}=(n)x\) as required.
-    If \(n\geq |w|\), then \((n)wx'=(n-|w|)x'=(n-|w|+|w|)x=(n)x\) as required.
+\uses{lem:cantor_restriction_shiftK}
+    ($\Leftarrow$): Suppose that $u = f|_m$. By \cref{lem:cantor_restriction_shiftK}, it follows that $f = f|_m \cdot (f)\sigma^m = u (f)\sigma^m \in u \mathfrak{C}$,
+    as required.
 
-    \((\Rightarrow):\) Suppose that \(x\in w\mathfrak{C}\). It follows that there is \(x'\in \mathfrak{C}\) such that \(x=wx'\). In particular, for all \(n<|w|\), we have \((n)x|_{|w|}=(n)x=(n)wx'=(n)w\) as required.
+    ($\Rightarrow$): Suppose that \(f\in u\mathfrak{C}\). It follows that there exists some \(g\in \mathfrak{C}\) such that \(f=ug\).
+    In particular, for all \(n \in \{0,\ldots, m-1\}\), we have that \((n)f = (n)ug = (n)u\), hence $f|_m = u$, as required.
 \end{proof}
-The same works for finite prefixes.
-\begin{lemma}\label{lem:finite_cone_prefixes}
-\uses{def:finite_prefix_of_cantor,def:cones, def:restriction_of_finite_string}
-    Suppose that \(w,v\in \{0,1\}^*\). Then \(v\in w\{0,1\}^*\) if and only if \(|v|\geq |w|\) and \(w=v|_{|w|}\).
-\end{lemma}
-\begin{proof}
-    \((\Leftarrow):\) Suppose that \(|v|\geq |w|\) and \(w =v|_{|w|}\). Define \(v':\{0,1 ,\ldots |v|-|w|-1\}\to \{0,1\}\) by \((n)v'=(n+|w|)v\).
-    As \(wv'\in w\{0,1\}^*\), we need only show that \(wv'=v\). First note that \(|v|=|w|+|v'|=|w|+|v|-|w|=|w|\).
-    Let \(n<|v|\) be arbitrary. We need only show that \((n)wv'=v\). If \(n<|w|\), then we have \((n)wv'=(n)w=(n)v|_{|w|}=(n)v\) as required.
-    If \(n\geq |w|\), then \((n)wv'=(n-|w|)v'=(n-|w|+|w|)v=(n)v\) as required.
 
-    \((\Rightarrow):\) Suppose that \(v\in w\{0,1\}^*\). It follows that there is \(v'\in \{0,1\}^*\) such that \(v=wv'\).
-    We have \(|v|=|w|+|v'|\geq |w|\).
-    Moreover, for all \(n<|w|\), we have \((n)v|_{|w|}=(n)v=(n)wv'=(n)w\) as required.
-\end{proof}
 
 \begin{lemma}\label{lem:double_restrict}
-\uses{lem:cone_prefixes,lem:finite_cone_prefixes}
-    Suppose that \(v,w\in \{0,1\}^*\) and \(x\in \mathfrak{C}\) are such that \(w\preceq v\) and \(v\preceq x\). Then \(w\preceq x\).
+    \uses{def:Cantor_space,def:finite_prefix_of_cantor}
+    Suppose that \(u, v\in \bool^*\) and \(f\in \C\) are such that \(u\preceq v\) and \(v\preceq f\). Then \(u\preceq f\).
 \end{lemma}
 \begin{proof}
-By the definition of \(\preceq\) and Lemma~\ref{lem:finite_cone_prefixes}, it follows that \(v|_{|w|}=w\). Similarly, using Lemma~\ref{lem:cone_prefixes}, we have \(x|_{|v|}=v\).
-By Lemma~\ref{lem:cone_prefixes} we need to show that \(x|_{|w|}=w\).
-This follows as for all \(n<|w|\) we have \((n)x|_{|w|}=(n)x=(n)x|_{|v|}=(n)v=(n)v|_{|w|}=(n)w\).
+    \uses{def:finite_prefix_of_cantor,lem:concat_fin_infA}
+    By \cref{def:finite_prefix_of_cantor}, $f \in v \C$, so there exists some $g\in \C$ such that $f = vg$.
+    By the definition of prefixes, $v\in u\bool^\ast$, so there exists some $w$ such that $v = uw$.
+    Putting it together and applying \cref{lem:concat_fin_infA}, we get that $f = vg = (uw)g = u(wg) \in u\C$.
+    Hence $u \preceq f$ by definition.
 \end{proof}
 
 \begin{lemma}\label{lem:comp_cone_vs_word}
-\uses{def:cones,lem:cone_prefixes,lem:double_restrict}
-    If \(v,w\in \{0,1\}^*\), then \(w\preceq v \iff w\mathfrak{C} \supseteq v\mathfrak{C}\).
+\uses{def:cones,def:finite_prefix_of_cantor}
+    If \(u, v\in \bool^*\), then \(u\preceq v \iff u\C \supseteq v\C\).
 \end{lemma}
 \begin{proof}
-\((\Rightarrow):\) Suppose that \(w\preceq v\) and \(x\in \mathfrak{C}\). We show that \(vx\in w\mathfrak{C}\). In other words, we must show that \(w\preceq vx\). As \(w\preceq v\) and \(v \preceq vx\), this follows from Lemma~\ref{lem:double_restrict}.
+\uses{lem:double_restrict,lem:cone_prefixes}
+($\Rightarrow$) Suppose that $u \preceq v$, and let $f\in \C$ be arbitrary. Since $vf \in v\C$,
+$v\preceq vf$ by definition. By \cref{lem:double_restrict}, it follows that $u \preceq vf$ as well.
+But then $vf \in u\C$. Since $f$ was arbitrary, it follows that $v\C \subseteq u\C$.
 
-\((\Leftarrow):\) Suppose that \(v\mathfrak{C} \subseteq w\mathfrak{C}\). We show that \(w\preceq v\). 
-Suppose for a contradiction that \(w\) is not a prefix of \(v\). It follows from Lemma~\ref{lem:finite_cone_prefixes} that either \(|w|>|v|\) or (\(|w|\leq |v|\) and \(v|_{|w|}\neq w\)). We consider each case separately.
+($\Leftarrow$) Now suppose that $v\C \subseteq u\C$. Let $n = |u|$ and $m = |v|$.
+Let $f_0, f_1\in \C$ be the elements defined by,
+respectively, $(i)f_0 = 0$ and $(i)f_1 = 1$ for all $i \in \N$.
 
-Case 1: Suppose that \(|w|>|v|\). Let \(x: \mathbb{N}\to \{0,1\}\) be defined by \((n)x=1-(|v|)w\) for all \(n\in \mathbb{N}\). Note that \(vx\in v\mathfrak{C}\). Thus \(vx\in w\mathfrak{C}\).
-By Lemma~\ref{lem:cone_prefixes}, it follows that \((vx)|_{|w|}=w\).
-In particular, \((|v|)w=(|v|)(vx)|_{|w|}=(|v|)vx=(|v|-|v|)x=1-(|v|)w\). 
-This is a contradiction.
-
-Case 2: Suppose that \(|w|\leq |v|\) and \(v|_{|w|}\neq w\). Let \(x:\mathbb{N}\to \{0,1\}\) be defined by \((n)x=0\) for all \(n\in \mathbb{N}\). Then \(vx\in v\mathfrak{C}\).
-It follows that \(vx\in w\mathfrak{C}\). 
-By Lemma~\ref{lem:cone_prefixes}, it follows that \((vx)|_{|w|}=w\). 
-As \((vx)|_{|w|}=v|_{|w|}\), this is a contradiction.
+Then $vf_0, vf_1 \in u\C$. Hence by \cref{lem:cone_prefixes},
+$(vf_0)|_n = (vf_1)|_n = u$. Furthermore, $(m)vf_0 = (m-m)f_0 = (0)f_0 = 0$ and
+$(m)vf_1 = (0)f_1 = 1$.
+Hence, if $m < n$, then
+\[ (m)(vf_0)|_n = (m)vf_0 = 0 \neq 1 = (m)vf_1 = (m)(vf_1)|_n, \]
+a contradiction. Hence $m \geq n$. But then
+$(i)u = (i)(vf_0)|_n = (i)v$ for all $i \leq n$, hence $u$ is a prefix of $v$ by definition.
 \end{proof}
 
 \begin{lemma}\label{lem:words=cones}
-\uses{lem:comp_cone_vs_word}
-    If \(v,w\in \{0,1\}^*\), then \(w= v \iff w\mathfrak{C} = v\mathfrak{C}\).
+\uses{def:cones}
+    If \(u, v\in \bool^*\), then \(u = v \iff u\C = v\C\).
 \end{lemma}
 \begin{proof}
-    This follows from Lemma~\ref{lem:comp_cone_vs_word} since \(\preceq\) and \(\subseteq\) are partial orders.
+\uses{lem:comp_cone_vs_word}
+    This follows from \cref{lem:comp_cone_vs_word} since \(\preceq\) and \(\subseteq\) are partial orders.
 \end{proof}
 
 \begin{lemma}\label{lem:intersecting_cones}
-\uses{lem:cone_prefixes}
-If \(v,w\in \{0,1\}^*\) and \(v\mathfrak{C} \cap w\mathfrak{C} \neq \varnothing\), then either \(v\mathfrak{C} \subseteq w\mathfrak{C}\) or \(w\mathfrak{C} \subseteq v\mathfrak{C}\).
+\uses{def:cones}
+If \(u, v \in \bool^*\) and \(u\C \cap v\C \neq \varnothing\), then either
+\(u\C \subseteq v\C\) or \(v\C \subseteq u\C\).
 \end{lemma}
 \begin{proof}
-    If \(v\mathfrak{C} \cap w\mathfrak{C} \neq \varnothing\), then there is some \(x\in v\mathfrak{C} \cap w\mathfrak{C}\). 
-    In particular \(v\preceq x\) and \(w\preceq x\).
-    By Lemma~\ref{lem:cone_prefixes}, it follows that \(x|_{|v|}=v\) and \(x|_{|w|}=w\).
-    We either have \(|v|\geq |w|\) or \(|w|\geq |v|\). We consider each case separately.
-
-    Case 1: Suppose that \(|v|\geq |w|\). Then \(v|_{|w|}=(x|_{|v|})|_{|w|}=x|_{|w|}=w\). By Lemma~\ref{lem:finite_cone_prefixes}, it follows that \(w\leq v\). Thus by Lemma~\ref{lem:cone_prefixes}, we have \(v\mathfrak{C} \subseteq w\mathfrak{C}\).
-
-    Case 2: Suppose that \(|w|\geq |v|\). Then \(w|_{|v|}=(x|_{|w|})|_{|v|}=x|_{|v|}=v\). By Lemma~\ref{lem:finite_cone_prefixes}, it follows that \(v\leq w\). Thus by Lemma~\ref{lem:cone_prefixes}, we have \(w\mathfrak{C} \subseteq v\mathfrak{C}\).
+\uses{lem:cone_prefixes}
+    Let $m = |u|$ and let $n = |v|$.
+    If \(u\C \cap v\C \neq \varnothing\), then there is some \(f\in u\C \cap v\C\). 
+    In particular \(u\preceq f\) and \(v\preceq f\).
+    By \cref{lem:cone_prefixes}, it follows that \(f|_{m} = u\) and \(f|_{n} = v\).
+    Without loss of generality suppose that $m < n$.
+    Then $(i)u = (i)f|_{m} = (i)f = (i)f|_n = (i)v$, for all $i \leq m$,
+    hence $u\preceq v$ by definition.
+    Thus by \cref{lem:cone_prefixes}, we have \(v\C \subseteq u\C\).
 \end{proof}
 
 \begin{lemma}\label{lem:incompwords_vs_disjoint_cones}
-    \uses{lem:intersecting_cones}
-    If \(v,w\in \{0,1\}^*\), then \(v\) and \(w\) are incomparable if and only if \(v\mathfrak{C} \cap w \mathfrak{C} =\varnothing\).
+    \uses{def:cones,def:comparable}
+    If \(u, v\in \bool^*\), then \(u\) and \(v\) are incomparable if and only if \(u\C \cap v\C = \varnothing\).
 \end{lemma}
 \begin{proof}
-    \((\Rightarrow):\) We show the contrapositive.
-    Suppose that \(v\mathfrak{C} \cap w \mathfrak{C} \neq \varnothing\). By Lemma~\ref{lem:intersecting_cones}, it follows that \(v\mathfrak{C} \subseteq w\mathfrak{C}\) or \(w\mathfrak{C} \subseteq v\mathfrak{C}\). Thus by Lemma~\ref{lem:comp_cone_vs_word}, it follows that either \(w\preceq v\) or \(v\preceq w\).
-    So \(v\) and \(w\) are comparable.
+    \uses{lem:intersecting_cones,lem:comp_cone_vs_word}
+    We prove the contrapositive, i.e. that $u\C \cap v\C \neq \varnothing$ if and only if
+    $u$ and $v$ are comparable.
 
-    \((\Leftarrow):\) We show the contrapositive. Suppose that \(v\) and \(w\) are comparable. 
-    
-    Case 1: If \(v\preceq w\), then by Lemma~\ref{lem:comp_cone_vs_word}, we have \(w\mathfrak{C} \subseteq v\mathfrak{C}\). In particular, \(v\mathfrak{C}\cap w\mathfrak{C}=w\mathfrak{C}\neq \varnothing\).
+    ($\Rightarrow$) Assume that $u\C \cap v\C \neq \varnothing$. By \cref{lem:intersecting_cones},
+    $u\C \subseteq v\C$ or vice-versa. Without loss of generality suppose that
+    $u\C \subseteq v\C$. By \cref{lem:comp_cone_vs_word}, this implies that $v \preceq u$.
+    Hence $u$ and $v$ are comparable.
 
-    Case 2: If \(w\preceq v\), then by Lemma~\ref{lem:comp_cone_vs_word}, we have \(v\mathfrak{C} \subseteq w\mathfrak{C}\). In particular, \(w\mathfrak{C}\cap v\mathfrak{C}=v\mathfrak{C}\neq \varnothing\).
+    ($\Leftarrow$) Assume that $u$ and $v$ are comparable. Then $u \preceq v$ or vice-versa. Without loss
+    of generality, assume that $u \preceq v$. By \cref{lem:comp_cone_vs_word}, it follows that $v\C \subseteq u\C$.
+    Hence $u\C \cap v\C = v\C \neq \varnothing$, as required.
 \end{proof}
+
+\reinis{Got to here in glossary tidying pass}
 
 \begin{lemma}\label{lem:prefix_code_disjoint_cones}
 \uses{lem:intersecting_cones, def:prefix_code}
@@ -234,6 +375,7 @@ If \(P \subseteq \{0,1\}^*\), then \(P\) is a prefix code if and only if the set
 \begin{proof}
     By Definition~\ref{def:prefix_code}, \(P\) is a prefix code if and only if all the words \(v,w\in P\) are pairwise incomparable. By Lemma~\ref{lem:intersecting_cones}, this is equivalent to saying that the sets \(v\mathfrak{C}\) and \(w\mathfrak{C}\) for \(v,w\in P\) are pairwise disjoint.
 \end{proof}
+
 
 
 \begin{definition}%
@@ -295,7 +437,7 @@ I'm not sure where rocq falls on the boundary of coding and maths. Like in maths
 We wish to view elements of Thompson's group \(V\) as equivalence classes of tree pairs. We must establish some terminology about binary trees in order to do this.
 \begin{definition}%
   \label{def:rooted_binary_tree}
-\uses{def:prefix_code,def:concat_letter_set}
+\uses{def:prefix_code}
  A finite rooted binary tree \(T\) is one of:
  \begin{itemize}
      \item \(\{\varepsilon\}\);
@@ -772,6 +914,7 @@ A \emph{reduced Jonsson-Tarski expression} is either
 Suppose that \(x,y\in \mathfrak{C}\). We write \(x\leq y\) if either \(x=y\) or \((n)x<(n)y\) where \(n=\min(\makeset{m\in \mathbb{N}}{\((m)x\neq (m)y\)})\).
 \end{definition}
 \begin{definition}\label{def:F}
+\uses{def:lexorder_cantor,thm:V_equivalences}
     We define \(F_{cantor}\) to be the subgroup \[\makeset{f\in V_{cantor}}{for all \(x,y\in \mathfrak{C}\), we have \(x\leq y \iff (x)f\leq (y)f\)}\]
     of \(V_{cantor}\). We then define \(F_{tree}\) and \(F_{jt}\) via Theorem~\ref{thm:V_equivalences}.
     \luna{luna is getting increasingly lazy, we should define explicit isomorphisms and prove that this set is closed under composition and inversion and stuff}
