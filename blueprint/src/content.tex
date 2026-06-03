@@ -158,7 +158,11 @@ An important role in the theory of Thompsons groups is played by prefix codes, w
   words in $P$ are incomparable.
 \end{definition}
 
-
+\begin{definition}%
+  \label{def:prefix_code_complete}
+  \uses{def:prefix_code}
+  A prefix code $P$ is \emph{complete}, if for every word in $\bool^\ast$ is comparable with some word in $P$.
+\end{definition}
 
 \reinis{Finish this section}
 
@@ -243,7 +247,7 @@ to denote that $u$ is a prefix of $f$.
 \begin{definition}\label{def:restriction_of_infinite_string}
 \uses{def:Cantor_space}
 Let \(f\in \mathfrak{C}\) and let \(m\in \mathbb{N}\). The \emph{$m$-restriction} of $f$ is the word
-$f_m$ of length $m$ given by \(f|_m = (0)f(1)f\cdots (m-1)f \in \bool^\ast\).
+$f|_m$ of length $m$ given by \(f|_m = (0)f(1)f\cdots (m-1)f \in \bool^\ast\).
 Its indexing function is given by \((i)f|_m=(i)f\) for all \(i\in \{0, \ldots, m-1\}\).
 \end{definition}
 
@@ -255,7 +259,7 @@ Its indexing function is given by \((i)f|_m=(i)f\) for all \(i\in \{0, \ldots, m
 
 The name for $\sigma$ refers to the fact that the shift map ``shifts'' every letter of $f$ to the right, discarding the first letter, if we think of
 $f$ as an infinite sequence.
-While both restrictions and shifts are lossy, every elements of $\C$ can be recovered from  a combination of a restriction and a shift, as we show in
+While both restrictions and shifts are lossy, every element of $\C$ can be recovered from  a combination of a restriction and a shift, as we show in
 \cref{lem:cantor_restriction_shiftK}.
 
 \begin{lemma}\label{lem:cantor_restriction_shiftK}
@@ -366,23 +370,54 @@ If \(u, v \in \bool^*\) and \(u\C \cap v\C \neq \varnothing\), then either
     Hence $u\C \cap v\C = v\C \neq \varnothing$, as required.
 \end{proof}
 
-\reinis{Got to here in glossary tidying pass}
 
 \begin{lemma}\label{lem:prefix_code_disjoint_cones}
-\uses{lem:intersecting_cones, def:prefix_code}
-If \(P \subseteq \{0,1\}^*\), then \(P\) is a prefix code if and only if the sets \(v\mathfrak{C}\) and \(w\mathfrak{C}\) for \(v,w\in P\) are pairwise disjoint.
+\uses{def:cones, def:prefix_code}
+If \(P \subseteq \bool^*\), then \(P\) is a prefix code if and only if the sets \(u\C\) and \(v\C\)
+are pairwise disjoint for all \(u, v\in P\).
 \end{lemma}
 \begin{proof}
-    By Definition~\ref{def:prefix_code}, \(P\) is a prefix code if and only if all the words \(v,w\in P\) are pairwise incomparable. By Lemma~\ref{lem:intersecting_cones}, this is equivalent to saying that the sets \(v\mathfrak{C}\) and \(w\mathfrak{C}\) for \(v,w\in P\) are pairwise disjoint.
+\uses{lem:intersecting_cones, def:prefix_code}
+    By Definition~\ref{def:prefix_code}, \(P\) is a prefix code if and only if all the words \(u, v\in P\) are pairwise incomparable.
+    By Lemma~\ref{lem:intersecting_cones}, this is equivalent to saying that the sets \(u\C\) and \(v\C\) for \(u, v\in P\) are pairwise disjoint.
 \end{proof}
 
+\reinis{
+    We have a minor problem. I gave a definition of a complete code in \cref{def:prefix_code_complete} via finite words only.
+    There I define it as a prefix code such that every word is comparable to some word in the prefix code.
+    This is equivalent to saying it is maximal, i.e. not contained in any strictly larger prefix code, and
+    I believe this is how it is defined in the literature for infinite codes.
 
+    For finite codes \cref{def:prefix_code_complete} and \cref{def:prefix_code_complete_cantor} coincide, the proof proceeds
+    by looking at a prefix of $f\in \C$ whose length is greater than any word in the prefix code $P$.
 
-\begin{definition}%
-  \label{def:complete_prefix_code}
-  \uses{def:prefix_code}
-A complete prefix code is a prefix code \(P\) such that for all  $x\in \mathfrak{C}$, there is $p_x\in P$ with \(x\in p_x\mathfrak{C}\).
-\end{definition}
+    However for infinite codes these are different. Namely, according to \cref{def:prefix_code_complete}, the code
+    $P = \set{1^n0}{n\in \N}$ is complete. This is 
+    because, every finite word is either of the form $1^k$,
+    and so is comparable to $1^k0$, or it has a prefix $1^k0$.
+    Equivalently, it is a maximal code, since we cannot add
+    any word to it.
+    But it is not complete in the sense of \cref{lem:prefix_code_complete_cantor},
+    since the element $1^\omega \not \in P\C$.
+
+    How do we proceed?\\
+    1. We can make it so that all our prefix codes are finite (will we ever use infinite ones?), which fixes the issue.\\
+    2. I can change \cref{def:prefix_code_complete}, to say that it defines an \emph{maximal} prefix code instead. We can then define a complete prefix code to be one that is maximal and finite.\\
+    3. We can change the condition in \cref{def:cantor_to_prefix_code_cantor}
+    to require the prefix code be finite as well as complete.
+
+    Personally I think 1. is the simplest solution since it means
+    our prefix codes will always be computable.
+}
+\begin{lemma}%
+    \label{lem:prefix_code_complete_cantor}
+    \uses{def:cones,def:prefix_code}
+A prefix code \(P\) is complete if if for every $f\in \C$, there exists some $u\in P$ with \(f\in u\C\).
+\end{lemma}
+
+\reinis{Got to here in glossary tidying pass}
+\luna{nice! looking great. Im glad the french like \(0\in\N\)}
+
 \begin{lemma}\label{lem:prefix_code=cone_parition}
   \uses{lem:prefix_code_disjoint_cones, lem:words=cones,def:complete_prefix_code,lem:incompwords_vs_disjoint_cones}
   A subset \(P\subseteq \{0,1\}^*\) is a complete prefix code if and only if \(\makeset{w\mathfrak{C}}{\(w\in P\)}\) is a partition of \(\mathfrak{C}\).
