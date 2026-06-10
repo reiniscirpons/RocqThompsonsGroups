@@ -190,6 +190,18 @@ Proof.
   by case: (x2 == x1).
 Qed.
 
+Lemma seqprefix_comparable0s: forall s,
+  (([::]: seq T) >=< s).
+Proof.
+  by move => s; rewrite /(_ >=< _) seqprefix0s.
+Qed.
+
+Lemma seqprefix_comparables0: forall s,
+  (s >=< ([::]: seq T)).
+Proof.
+  by move => s; rewrite /(_ >=< _) seqprefix0s orbC.
+Qed.
+
 #[export]
 HB.instance Definition _ := hasBottom.Build _ (seq T) seqprefix0s.
 
@@ -228,6 +240,8 @@ Definition eqhead_seqprefixltE := @eqhead_seqprefixltE.
 
 Definition sub_seqprefix_lexi := @sub_seqprefix_lexi.
 Definition seqprefix_comparable_cons := @seqprefix_comparable_cons.
+Definition seqprefix_comparable0s := @seqprefix_comparable0s.
+Definition seqprefix_comparables0 := @seqprefix_comparables0.
 
 End Exports.
 End SeqPrefixOrder.

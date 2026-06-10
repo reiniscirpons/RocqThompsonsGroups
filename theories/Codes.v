@@ -20,7 +20,7 @@ Open Scope order_scope.
    Hence we can now use the following notations:
    x <= y <-> x is a prefix of y
    x < y <-> x is a strict prefix of y
-   x >=< y <-> x and y are comparable
+   x >=<y <-> x and y are comparable
    x >< y <-> x and y are incomparable
    *)
 
@@ -123,20 +123,53 @@ Qed.
 HB.instance Definition _ :=
   hasDecEq.Build binary_tree binary_tree_eqP.
 
+Fixpoint binary_tree_merge (tree1 tree2: binary_tree): binary_tree :=
+  match tree1, tree2 with
+  | Node l1 r1, Node l2 r2 =>
+    Node (binary_tree_merge l1 l2) (binary_tree_merge r1 r2)
+  | Empty, _ => tree2
+  | _, Empty => tree1
+  end.
+
+Lemma binary_tree_merges0: forall tree,
+  binary_tree_merge tree Empty = tree.
+Proof. by case. Qed.
+
+Lemma binary_tree_merge0s: forall tree,
+  binary_tree_merge Empty tree = tree.
+Proof. done. Qed.
+
+Lemma binary_tree_mergeA: associative binary_tree_merge.
+Proof.
+  elim => [|l Hl r Hr]; case => [|l2 r2]; case => [|l3 r3] //=.
+  by rewrite Hr Hl.
+Qed.
+
+Lemma binary_tree_mergeC: commutative binary_tree_merge.
+Proof.
+  elim => [|l Hl r Hr]; case => [|l2 r2] //=.
+  by rewrite Hr Hl.
+Qed.
+
+Lemma binary_tree_mergeb: idempotent_op binary_tree_merge.
+Proof.
+  elim => [|l Hl r Hr] //=.
+  by rewrite Hr Hl.
+Qed.
 
 Definition Leaf := Node Empty Empty.
 Definition Caret := Node Leaf Leaf.
 
-Fixpoint add_word (tree: binary_tree) (word: binary_word): binary_tree :=
-  match word, tree with
-  | nil, Empty => Leaf
-  | nil, _ => tree
-  | false::word', Empty => Node (add_word Empty word') Empty
-  | false::word', Node l r => Node (add_word l word') r
-  | true::word', Empty => Node Empty (add_word Empty word')
-  | true::word', Node l r => Node l (add_word r word')
+Fixpoint linear_tree (word: binary_word): binary_tree :=
+  match word with
+  | nil => Leaf
+  | false::word' => Node (linear_tree word') Empty
+  | true::word' => Node Empty (linear_tree word')
   end.
 
+Definition add_word
+  (tree: binary_tree) (word: binary_word): binary_tree :=
+    binary_tree_merge tree (linear_tree word).
 
 Fixpoint tree_of_code (code: binary_code): binary_tree :=
   match code with
@@ -144,44 +177,70 @@ Fixpoint tree_of_code (code: binary_code): binary_tree :=
   | word::code' => add_word (tree_of_code code') word
   end.
 
+Lemma tree_of_code_cat: forall code1 code2,
+  tree_of_code (code1 ++ code2) =
+    binary_tree_merge (tree_of_code code1) (tree_of_code code2).
+Proof.
+  elim => [//|word code1 IH code2 /=].
+  by rewrite /add_word -binary_tree_mergeA
+          [_ _ (_ code2)]binary_tree_mergeC
+          binary_tree_mergeA IH.
+Qed.
+
+Lemma tree_of_code_prepend: forall letter code,
+  tree_of_code (prepend letter code) =
+    if code == [::] then
+      Empty
+    else if letter then
+      Node Empty (tree_of_code code)
+    else
+      Node (tree_of_code code) Empty.
+Proof.
+  move => letter code; case: ifP => [/eqP -> //|].
+  elim: code => [//|word code]; case letter => /=;
+  case: code => [//|word' code /=] IH _;
+  by rewrite IH.
+Qed.
+
 Fixpoint code_of_tree (tree: binary_tree): binary_code :=
   match tree with
   | Empty => nil
-  | Node Empty Empty => [:: [::]]
   | Node l r =>
-    (prepend false (code_of_tree l)) ++
-    (prepend true (code_of_tree r))
+    if (tree == Leaf) then
+      [:: [::]]
+    else
+      (prepend false (code_of_tree l)) ++
+      (prepend true (code_of_tree r))
   end.
-
-(*Definition binary_tree_leaf_ind:*)
-(*  forall pred: binary_tree -> Prop,*)
-(*    pred Empty ->*)
-(*    pred Leaf ->*)
-
 
 Lemma binary_code_of_binary_tree_prefix_code: forall tree,
   prefix_code (code_of_tree tree).
 Proof.
-Admitted.
-(*  elim =>*)
-(*    [//| *)
-(*      [_|ll lr /prefix_codeP [Hlu Hlc]]*)
-(*      [_|rl rr /prefix_codeP [Hru Hrc]]] //; apply /prefix_codeP.*)
-(*  - move: Hru Hrc; set r := (Node rl rr) => Hru Hrc.*)
-(*    rewrite [r]lock /= -lock.*)
-(**)
-(*  elim => [//|l /prefix_codeP /= [Hlu Hlc] r /prefix_codeP /= [Hru Hrc]].*)
-(*  apply /prefix_codeP; split => [|word1 word2].*)
-(*  - rewrite cat_uniq !prepend_uniq /= => [|//|//].*)
-(*    apply /andP; split => [|//].*)
-(*    by apply /negP => /hasP [word /mapP [wordl _ ->] /mapP [wordr _ []]].*)
-(*  - rewrite !mem_cat => /orP [|] /mapP [word1' H1 -> {word1}] *)
-(*                        /orP [|] /mapP [word2' H2 -> {word2}] //;*)
-(*    rewrite seqprefix_comparable_cons => H;*)
-(*    apply f_equal.*)
-(*  -- by apply Hlc.*)
-(*  -- by apply Hrc.*)
-(*Qed.*)
+  elim => [//|l /prefix_codeP /= [Hlu Hlc] r /prefix_codeP /= [Hru Hrc]].
+  case: ifP => [//|_].
+  apply /prefix_codeP; split => [|word1 word2].
+  - rewrite cat_uniq !prepend_uniq /= => [|//|//].
+    apply /andP; split => [|//].
+    by apply /negP => /hasP [word /mapP [wordl _ ->] /mapP [wordr _ []]].
+  - rewrite !mem_cat => /orP [|] /mapP [word1' H1 -> {word1}] 
+                        /orP [|] /mapP [word2' H2 -> {word2}] //;
+    rewrite seqprefix_comparable_cons => H;
+    apply f_equal.
+  -- by apply Hlc.
+  -- by apply Hrc.
+Qed.
+
+Lemma tree_of_codeK: forall tree,
+  tree_of_code (code_of_tree tree) = tree.
+Proof.
+  elim => [//|l Hl r Hr] /=.
+  case: ifP => [/eqP [-> ->] //|H /=].
+  rewrite tree_of_code_cat !tree_of_code_prepend /=.
+  move: Hl Hr H;
+  case: ifP => [/eqP -> /= <-|_ ->];
+  case: ifP => [/eqP -> /= <-|_ ->] //= _.
+  by rewrite binary_tree_merges0.
+Qed.
 
 Lemma code_of_treeK: forall code,
   prefix_code code ->
@@ -189,30 +248,25 @@ Lemma code_of_treeK: forall code,
 Proof.
   elim => [//|word code IH /= /andP [Hword Hcode]].
   move: (IH Hcode) => {}IH.
-  case: word Hword => /= [|].
-  enough (Hnil: code = [::]).
-  - rewrite Hnil.
-  - move/allPn => H; exfalso; apply: H.
-    exists [::].
-Admitted.
-
-Lemma tree_of_codeK: forall tree,
-  tree_of_code (code_of_tree tree) = tree.
-Proof.
-  elim => [//|l Hl r Hr] /=.
+  case: word Hword => /= [H|a word].
+  - enough (Hnil: code = [::]); first by rewrite Hnil.
+    move/allPn: H; case: code {Hcode IH} => [//|word code H].
+    exfalso; apply: H; exists word.
+  -- by rewrite in_cons eq_refl.
+  -- by rewrite /(_ >=< _) negbK orbC seqprefix0s.
+  - case: a; case Htree: (tree_of_code code) => /=.
 Admitted.
 
 Fixpoint any_leaf (tree:binary_tree): option binary_word :=
   match tree with
   | Empty => None
   | Node l r =>
-    match any_leaf l with
-    | None => match any_leaf r with
-      | None => None
-      | Some w => Some (true::w)
-      end
-    | Some w => Some (false::w)
-    end
+    if any_leaf l is Some w then
+      Some (true::w)
+    else if any_leaf r is Some w then
+      Some (false::w)
+    else
+      Some nil
   end.
 
 Fixpoint follow_word (tree: binary_tree) (word: binary_word):
@@ -220,17 +274,53 @@ Fixpoint follow_word (tree: binary_tree) (word: binary_word):
     match tree, word with
     | Empty, _ => None
     | _, nil => any_leaf tree
-    | Node l r, false::word' =>
-      match follow_word l word' with
-      | None => None
-      | Some lw' => Some (false::lw')
-      end
-    | Node l r, true::word' =>
-      match follow_word r word' with
-      | None => None
-      | Some rw' => Some (false::rw')
-      end
+    | Node l _, false::word' =>
+      if l is Empty then
+        Some nil
+      else if follow_word l word' is Some lw' then
+        Some (false::lw')
+      else 
+        None
+    | Node _ r, true::word' =>
+      if r is Empty then
+        Some nil
+      else if follow_word r word' is Some rw' then
+        Some (true::rw')
+      else
+        None
     end.
+
+Lemma follow_word_nonempty: forall tree word,
+  tree != Empty -> exists word', follow_word tree word = Some word'.
+Proof.
+  elim => [//|l Hl r Hr]; case => [/= _|].
+  - case: (any_leaf l) => [word'|]; first by exists (true::word').
+    case: (any_leaf r) => [word'|]; first by exists (false::word').
+    by exists [::].
+  - case => /= word _.
+  -- case: r Hr => [_|rl rr Hr]; first by exists [::].
+     move: (Hr word) => [//|word' ->]; by exists (true::word').
+  -- case: l Hl => [_|ll lr Hl]; first by exists [::].
+     move: (Hl word) => [//|word' ->]; by exists (false::word').
+Qed.
+
+(*Lemma follow_word_cons: forall tree letter word,*)
+(*  tree != Empty -> *)
+
+
+Lemma follow_word_comparable: forall tree word word',
+  follow_word tree word = Some word' -> word' >=< word.
+Proof.
+  (*move => tree word word'.*)
+  (*elim: tree word => [//|l Hl r Hr]; case => [_|];*)
+  (*  first by rewrite seqprefix_comparables0.*)
+  (*case => word.*)
+  (*- case: r Hr => [/= _ [] <-|rl rr Hr];*)
+  (*    first by rewrite seqprefix_comparable0s.*)
+  (*  move: (follow_word_nonempty (Node l (Node rl rr)) (true::word)) =>*)
+  (*    [//|].*)
+Admitted.
+  
 
 Fixpoint complete_tree (tree: binary_tree): bool :=
   match tree with
