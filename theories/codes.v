@@ -1,6 +1,11 @@
 Require Import ssreflect ssrbool ssrfun.
 From HB Require Import structures.
-From mathcomp Require Import ssrnat eqtype div seq.
+From mathcomp Require Import ssrnat eqtype choice div seq preorder.
+From Thompson Require Import PrefixOrder.
+
+Import Order.PreorderTheory.
+
+Open Scope order_scope.
 
 (*
   Initially:
@@ -9,29 +14,15 @@ From mathcomp Require Import ssrnat eqtype div seq.
   Milestone:
     F is finitely generated
 *)
-Definition binary_word := seq bool.
 
-Definition comparable (word1 word2: binary_word): bool :=
-  (prefix word1 word2) || (prefix word2 word1).
-
-Lemma comparable_refl: forall word, comparable word word.
-Proof.
-  by move => word; rewrite /comparable prefix_refl.
-Qed.
-
-
-Lemma comparable_symm: forall word1 word2,
-  comparable word1 word2 -> comparable word2 word1.
-Proof.
-  by move => word1 word2; rewrite /comparable orbC.
-Qed.
-
-Lemma comparable_cons: forall letter word1 word2,
-  comparable (letter::word1) (letter::word2) =
-  comparable word1 word2.
-Proof.
-  by move => letter word1 word2; rewrite /comparable !prefix_cons !eq_refl.
-Qed.
+(* NOTE(reiniscirpons): binary_word is now defined in
+   PrefixOrder.v, where we also give them the prefix order.
+   Hence we can now use the following notations:
+   x <= y <-> x is a prefix of y
+   x < y <-> x is a strict prefix of y
+   x >=< y <-> x and y are comparable
+   x >< y <-> x and y are incomparable
+   *)
 
 (* TODO(reiniscirpons): Maybe do sets? *)
 Definition binary_code := seq binary_word.
@@ -42,19 +33,19 @@ Fixpoint prefix_code (code: binary_code): bool :=
   match code with
   | nil => true
   | word::code' =>
-    (all (fun word' => ~~ (comparable word' word)) code') &&
+    (all (fun word' => word' >< word) code') &&
     (prefix_code code')
   end.
 
-(*| The following lemma establishes that the `prefix_code` function
-    coincides with the mathematical definition of a prefix code. |*)
+(* The following lemma establishes that the `prefix_code` function
+    coincides with the mathematical definition of a prefix code. *)
 Lemma prefix_codeP: forall code,
   reflect
     (uniq code /\
       (forall word1 word2,
         word1 \in code ->
         word2 \in code ->
-        comparable word1 word2 ->
+        word1 >=< word2 ->
         word1 = word2))
     (prefix_code code).
 Proof.
@@ -64,9 +55,10 @@ Proof.
   -- apply /andP; split => [|//].
      apply /memPn => /= word' /Hcomp.
      apply contra => /eqP ->.
-     by exact: comparable_refl.
+     Locate comparablexx.
+     by exact: comparablexx.
   -- rewrite !in_cons => /orP [/eqP ->|H1] /orP [/eqP ->|H2] //.
-  --- by move/comparable_symm; move: H2 => /Hcomp /negP.
+  --- by rewrite comparable_sym; move: H2 => /Hcomp /negP.
   --- by move: H1 => /Hcomp /negP.
   --- by move => H3; apply H.
   - elim: code => /= [//|word code IH /andP [/memPn Hword Huniq] H].
@@ -78,7 +70,7 @@ Proof.
   --- apply H.
   ---- by rewrite in_cons eq_refl.
   ---- by rewrite in_cons Hword'; apply /orP; right.
-  ---- by rewrite comparable_symm.
+  ---- by rewrite comparable_sym.
   -- apply IH => [//|word1 word2 H1 H2 Hcomp].
      apply H => [||//]; rewrite in_cons; apply /orP; by right.
 Qed.
@@ -92,7 +84,7 @@ Proof.
   move => letter; elim => [//|word code'] /= IH /andP [/allP H /IH H'].
   apply /andP; split => [|//].
   apply /allP => word' /mapP /= [word'' /H H'' ->].
-  by rewrite comparable_cons.
+  by rewrite seqprefix_comparable_cons eq_refl /=.
 Qed.
 
 Lemma prepend_uniq: forall (letter: bool) (code: binary_code),
@@ -126,80 +118,6 @@ Qed.
 HB.instance Definition _ :=
   hasDecEq.Build binary_tree binary_tree_eqP.
 
-(* Luna attempt at making the free jonsson tarski algeba. the node operator is usually called 
-lambda in the literature and the child operators are usually called alpha_0 alpha_1. dont know if 
-we should imitate that or stick to this. (might matter if/when we change arity) *)
-
-Inductive jt_expression :=
-| JEmpty: jt_expression
-| JNode: jt_expression -> jt_expression -> jt_expression
-| JLeft: jt_expression -> jt_expression
-| JRight: jt_expression -> jt_expression.
-
-Scheme Equality for jt_expression.
-
-
-Fixpoint jt_reduce_exp (t : jt_expression) : jt_expression :=
-  match t with
-  | JEmpty => JEmpty
-  | JNode a b => 
-      match jt_reduce_exp a, jt_reduce_exp b with
-      | JLeft x, JRight y => if (jt_expression_beq x y) then x else JNode (JLeft x) (JRight y)
-      | x, y => JNode x y
-      end
-      
-  | JLeft x =>
-      match jt_reduce_exp x with
-      | JNode a b => a
-      | y => JLeft y
-      end
-
-  | JRight x =>
-      match jt_reduce_exp x with
-      | JNode a b => b
-      | y => JRight y
-      end
-  end.
-
-Definition is_reduced_jt (t : jt_expression) : Prop :=
-  jt_reduce_exp t = t.
-
-Lemma jt_reduction_is_idempotent (t : jt_expression) : is_reduced_jt (jt_reduce_exp t).
-Proof.
-unfold is_reduced_jt.
-induction t.
-unfold jt_reduce_exp.
-reflexivity.
-Admitted.
-
-Record jt := {
-  normal_form :> jt_expression;
-  is_normal_form : is_reduced_jt normal_form;
-}.
-
-Definition JTNode (l r : jt) : jt :=
-  {| normal_form :=
-       jt_reduce_exp (JNode (normal_form l) (normal_form r));
-     is_normal_form :=
-       jt_reduction_is_idempotent (JNode (normal_form l) (normal_form r));
-  |}.
-
-
-Definition JTLeft (n : jt) : jt :=
-  {| normal_form :=
-       jt_reduce_exp (JLeft (normal_form n));
-     is_normal_form :=
-       jt_reduction_is_idempotent (JLeft (normal_form n));
-  |}.
-
-Definition JTRight (n : jt) : jt :=
-  {| normal_form :=
-       jt_reduce_exp (JRight (normal_form n));
-     is_normal_form :=
-       jt_reduction_is_idempotent (JRight (normal_form n));
-  |}.
-
-Definition JTeq (x : jt) (y : jt) : bool := jt_expression_beq (normal_form x) (normal_form y).
 
 Definition Leaf := Node Empty Empty.
 Definition Caret := Node Leaf Leaf.
@@ -273,7 +191,7 @@ Proof.
     by apply /negP => /hasP [word /mapP [wordl _ ->] /mapP [wordr _ []]].
   - rewrite !mem_cat => /orP [|] /mapP [word1' H1 -> {word1}] 
                         /orP [|] /mapP [word2' H2 -> {word2}] //;
-    rewrite comparable_cons => H;
+    rewrite seqprefix_comparable_cons => H;
     apply f_equal.
   -- by apply Hlc.
   -- by apply Hrc.
@@ -304,7 +222,7 @@ Fixpoint complete_tree (tree: binary_tree): bool :=
 Definition is_complete (P: binary_code): Prop :=
   (prefix_code P) /\
   (forall (u: binary_word), exists (v: binary_word),
-   v \in P /\ comparable u v).
+   (v \in P) && (u >=< v)).
 
 Definition complete (P: binary_code): bool :=
   (prefix_code P) && (complete_tree (tree_of_code P)).

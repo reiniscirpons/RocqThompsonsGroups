@@ -1,4 +1,7 @@
 -docroot Thompson
 -R theories Thompson
 
-theories/codes.v
+theories/Codes.v
+theories/PrefixOrder.v
+theories/JonssonTarski.v
+
