@@ -262,4 +262,8 @@ End DefaultSeqPrefixOrder.
 End DefaultSeqPrefixOrder.
 
 Import BoolOrder.
+
+Export SeqPrefixOrder.Exports.
+Export DefaultSeqPrefixOrder.
+
 Definition binary_word := seqprefix bool_display bool.
