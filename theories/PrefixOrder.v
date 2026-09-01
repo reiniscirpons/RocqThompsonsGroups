@@ -2,6 +2,10 @@ Require Import ssreflect ssrbool ssrfun.
 From HB Require Import structures.
 From mathcomp Require Import seq preorder eqtype choice.
 
+Set Implicit Arguments.
+Unset Strict Implicit.
+Unset Printing Implicit Defensive.
+
 Local Open Scope order_scope.
 
 Reserved Notation "x <=^pre y" (at level 70, y at next level).
@@ -48,14 +52,14 @@ Proof. exact: disp. Qed.
 
 Module Import SeqPrefixSyntax.
 
-Notation "<=^pre%O" := (@le (seqprefix_display _ _) _) : function_scope.
-Notation ">=^pre%O" := (@ge (seqprefix_display _ _) _) : function_scope.
-Notation ">=^pre%O" := (@ge (seqprefix_display _ _) _) : function_scope.
-Notation "<^pre%O" := (@lt (seqprefix_display _ _) _) : function_scope.
-Notation ">^pre%O" := (@gt (seqprefix_display _ _) _) : function_scope.
-Notation "<?=^pre%O" := (@leif (seqprefix_display _ _) _) : function_scope.
-Notation ">=<^pre%O" := (@comparable (seqprefix_display _ _) _) : function_scope.
-Notation "><^pre%O" := (fun x y => ~~ (@comparable (seqprefix_display _ _) _ x y)) :
+Notation "<=^pre%O" := (@le (seqprefix_display _) _) : function_scope.
+Notation ">=^pre%O" := (@ge (seqprefix_display _) _) : function_scope.
+Notation ">=^pre%O" := (@ge (seqprefix_display _) _) : function_scope.
+Notation "<^pre%O" := (@lt (seqprefix_display _) _) : function_scope.
+Notation ">^pre%O" := (@gt (seqprefix_display _) _) : function_scope.
+Notation "<?=^pre%O" := (@leif (seqprefix_display _) _) : function_scope.
+Notation ">=<^pre%O" := (@comparable (seqprefix_display _) _) : function_scope.
+Notation "><^pre%O" := (fun x y => ~~ (@comparable (seqprefix_display _) _ x y)) :
   function_scope.
 
 Notation "<=^pre y" := (>=^pre%O y) : order_scope.
@@ -266,4 +270,4 @@ Import BoolOrder.
 Export SeqPrefixOrder.Exports.
 Export DefaultSeqPrefixOrder.
 
-Definition binary_word := seqprefix bool_display bool.
+Definition binary_word := seqprefix bool.

@@ -5,6 +5,10 @@ From mathcomp Require Import
   zify.
 From Thompson Require Import PrefixOrder.
 
+Set Implicit Arguments.
+Unset Strict Implicit.
+Unset Printing Implicit Defensive.
+
 Import Order.PreorderTheory.
 Import Order.POrderTheory.
 
@@ -69,48 +73,46 @@ Proof.
   move => code; apply (iffP idP) => /= [|[]].
   - rewrite /prefix_code =>
       /andP [/sortedP Hsort Hcomp]; split.
-  -- apply /(sortedP [::]) => i Hi.
-     move: (Hsort [::] i Hi).
-     rewrite le_eqVlt => /orP [/eqP H|//].
-     exfalso.
-     enough (Hfalso: nth [::] code i >< nth [::] code i.+1);
-       first by move/incomparable_eqF/eqP: Hfalso; rewrite H.
-     move/pairwiseP in Hcomp.
-     apply Hcomp => [|//|//];
-       (* TODO(reiniscirpons): Why does by lia fail here !?*)
-     enough (Hi': (i < size code)%N) => [//|].
-     by apply ltn_trans with i.+1.
-
+    + apply /(sortedP [::]) => i Hi.
+      move: (Hsort [::] i Hi).
+      rewrite le_eqVlt => /orP [/eqP H|//].
+      exfalso.
+      enough (Hfalso: nth [::] code i >< nth [::] code i.+1);
+        first by move/incomparable_eqF/eqP: Hfalso; rewrite H.
+      move/pairwiseP in Hcomp.
+      apply Hcomp => [|//|//];
+        (* TODO(reiniscirpons): Why does by lia fail here !?*)
+      enough (Hi': (i < size code)%N) => [//|].
+      by apply ltn_trans with i.+1.
   - elim: code Hcomp {Hsort} => /=
       [//|word code IH /andP [/allP Hcomp /IH {IH} H] word1 word2].
-  -- rewrite !in_cons => /orP [/eqP ->|H1] /orP [/eqP ->|H2] //.
-  --- by move: H2 => /Hcomp /negP.
-  --- by move: H1 => /Hcomp /negP; rewrite comparable_sym.
-  --- by move => H3; apply H.
+    + rewrite !in_cons => /orP [/eqP ->|H1] /orP [/eqP ->|H2] //.
+      * by move: H2 => /Hcomp /negP.
+      * by move: H1 => /Hcomp /negP; rewrite comparable_sym.
+      * by move => H3; apply H.
   - elim: code => [//|word code IH Hsort Hcomp].
     apply /andP; split.
-  -- apply /(sortedP [::]) => i Hi.
-     rewrite le_eqVlt; apply /orP; right.
-     move/sortedP in Hsort.
-     by apply Hsort.
-
-  -- enough (H: prefix_code code).
-  --- move/andP: H => /= [_ ->].
-      apply /andP; split => [|//].
-      apply/allP => x Hx; apply /negP => Hwx.
-      enough (Hfalso: word = x).
-  ---- move: Hsort; rewrite sorted_pairwise /=;
-         last by exact: lt_trans.
-       move/andP => [/allP H];
-       by move: (H x Hx); rewrite Hfalso ltxx.
-  ---- apply Hcomp => [||//];
-       rewrite in_cons; apply/orP.
-  ----- by left.
-  ----- by right.
-  -- apply IH;
-       first by move/(drop_sorted 1): Hsort => /=; rewrite drop0.
-     move => word1 word2 H1 H2 H12; apply Hcomp => [||//];
-     by rewrite in_cons; apply/orP; right.
+    + apply /(sortedP [::]) => i Hi.
+      rewrite le_eqVlt; apply /orP; right.
+      move/sortedP in Hsort.
+      by apply Hsort.
+    + enough (H: prefix_code code).
+      * move/andP: H => /= [_ ->].
+        apply /andP; split => [|//].
+        apply/allP => x Hx; apply /negP => Hwx.
+        enough (Hfalso: word = x).
+          move: Hsort; rewrite sorted_pairwise /=;
+            last by exact: lt_trans.
+          move/andP => [/allP H];
+          by move: (H x Hx); rewrite Hfalso ltxx.
+        apply Hcomp => [||//];
+        rewrite in_cons; apply/orP.
+          by left.
+          by right.
+      * apply IH;
+          first by move/(drop_sorted 1): Hsort => /=; rewrite drop0.
+        move => word1 word2 H1 H2 H12; apply Hcomp => [||//];
+        by rewrite in_cons; apply/orP; right.
 Qed.
 
 Definition prepend (letter: bool) (code: seq binary_word):
@@ -171,6 +173,16 @@ Proof.
   case => [//|word code] /= /andP [_ /andP [/andP [H _ _]]].
   exfalso.
   by rewrite seqprefix_comparable0s in H.
+Qed.
+
+Lemma prefix_code_nil: forall code,
+  prefix_code code -> [::] \in code -> code = [:: [::]].
+Proof.
+  elim => [//|[code _ /prefix_code_cons_nil -> //|a u code IH H]].
+  move: (prefix_code_behead H) => /IH {}IH.
+  rewrite in_cons => /IH Hfalso.
+  exfalso.
+  by move: H; rewrite Hfalso.
 Qed.
 
 Inductive binary_tree :=
@@ -329,7 +341,7 @@ Proof.
      by rewrite (nth_map [::]).
   -- by lia.
   -- by lia.
-  - move: (binary_code_prepend true (word::code) Hr).
+  - move: (binary_code_prepend true Hr).
     by rewrite prepend_cons.
 Qed.
 
@@ -365,7 +377,7 @@ Qed.
 
 Definition child_code (letter: bool) (code: seq binary_word):
   seq binary_word :=
-    filter (fun x => ohead x == Some letter) code.
+    [seq word <- code | ohead word == Some letter].
 
 Lemma binary_code_child_code: forall letter code,
   binary_code code -> binary_code (child_code letter code).
@@ -383,13 +395,65 @@ Proof.
   by apply /pairwise_filter.
 Qed.
 
+Lemma child_codeK: forall (code: seq (seqlexi bool)),
+  prefix_code code ->
+  [::] \notin code ->
+  child_code false code ++ child_code true code = code.
+Proof.
+  move => code Hpref Hnil.
+  Check lt_trans.
+  Check irr_sorted_eq.
+  apply @lt_sorted_eq with (T := seqlexi bool).
+  - case Htrue: (child_code false code) => [|lword lcode] /=.
+    + by case/prefix_codeP: (prefix_code_child_code true Hpref).
+    + rewrite cat_path; apply/andP; split.
+      * move: (prefix_code_child_code false Hpref).
+        by rewrite Htrue => /prefix_codeP [].
+      * rewrite path_min_sorted;
+          first by case/prefix_codeP: (prefix_code_child_code true Hpref).
+        apply/allP; case => [|[|] l]; rewrite mem_filter // => _.
+        move: (mem_last lword lcode).
+        set lword' := last lword lcode.
+        rewrite -Htrue mem_filter => /andP [].
+        by case: lword' => [//|[//|] l'].
+  - by case/prefix_codeP: Hpref.
+  - move => [|[] l]; rewrite mem_cat !mem_filter // orbC //.
+    by move: Hnil; case: ([::] \in code).
+Qed.
+
+Lemma child_code_prepend_behead: forall letter code,
+  child_code letter code =
+  prepend letter [seq behead word | word <- code & ohead word == Some letter].
+Proof.
+  move => letter; elim => [//|word code IH /=].
+  case: ifP => [H /=|//].
+  f_equal.
+  - by move: H; case: word => [//|a l /= /eqP [->]].
+  - by rewrite {1}IH.
+Qed.
+
+
 (* TODO(reiniscirpons): lemma about reconstructing binary
    code from its children. *)
+(* TODO(reiniscirpons): Induction on minimum length of element in sequence
+ *)
+
 
 Lemma code_of_treeK: forall code,
   prefix_code code ->
   code_of_tree (tree_of_code code) = code.
 Proof.
+  move => code Hpref.
+  case Hnil: ([::] \notin code).
+  - rewrite -{1}[code]child_codeK // tree_of_code_cat
+    !child_code_prepend_behead !tree_of_code_prepend.
+    case: ifP => [/eqP|] Hl; case: ifP => [/eqP|] Hr /=.
+    + by case: code Hpref Hnil Hl Hr => [//|[//|[//|//]]].
+    + case: ifP => [/eqP [] /eqP /tree_of_code_empty|_];
+        first by rewrite Hr.
+    admit.
+    Search tree_of_code.
+  - move/negP: Hnil => /negP Hnil.
   (*elim => [//|[|letter word] code IH];*)
   (*  first by move/prefix_code_cons_nil => ->.*)
   (*move => /=.*)
