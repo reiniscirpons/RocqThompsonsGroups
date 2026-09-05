@@ -632,84 +632,71 @@ Fixpoint is_uncancellable (x : jt_expression) : bool :=
 Lemma dont_reduce_reduced (x : jt_expression): is_uncancellable x -> jt_reduce_exp x = x.
 Proof.
 have inductversion: forall (n:nat), forall (x : jt_expression), jt_depth x <= n -> is_uncancellable x -> jt_reduce_exp x = x.
-2: exact: inductversion (jt_depth x) x (leqnn (jt_depth x)).
-induction n. move => y hy.
-rewrite (depth_at_most_zero_is_empty y hy) //.
-move => y h1 h2.
-case yhype: y => [|yl yr|yl|yr] //.
-rewrite yhype in h1.
-simpl in h1.
-have hyl:jt_depth yl <= n. by lia. have hyr:jt_depth yr <= n. by lia.
-have hyl2: jt_reduce_exp yl = yl.
-rewrite yhype in h2.
-have hyl3: is_uncancellable yl.
-simpl in h2.
-case ylhype: yl => [|yll ylr|yll|ylr] //.
-rewrite ylhype in h2; rewrite -ylhype in h2; rewrite -ylhype; exact (andP h2).1.
-rewrite ylhype in h2; rewrite -ylhype in h2; rewrite -ylhype.
-case yrhype: yr => [|yrl yrr|yrl|yrr].
-all: try rewrite yrhype in h2; try rewrite -yrhype in h2; try exact (andP h2).1.
-exact: (andP ((andP h2).1)).2.
-rewrite -ylhype; rewrite ylhype in h2; rewrite -ylhype in h2; exact (andP h2).1.
-exact: (IHn yl) hyl hyl3.
-simpl; rewrite hyl2.
-have hyr2: jt_reduce_exp yr = yr.
-rewrite yhype in h2.
-have hyr3: is_uncancellable yr.
-simpl in h2.
-case ylhype: yl => [|yll ylr|yll|ylr].
-rewrite ylhype in h2. rewrite -ylhype in h2. exact (andP h2).2.
-rewrite ylhype in h2. rewrite -ylhype in h2. exact (andP h2).2.
-rewrite ylhype in h2. rewrite -ylhype in h2.
-case yrhype: yr => [|yrl yrr|yrl|yrr] //.
-rewrite yrhype in h2;rewrite -yrhype in h2;rewrite -yrhype; try exact (andP h2).2.
-rewrite yrhype in h2. rewrite -yrhype in h2. rewrite -yrhype.
-exact (andP h2).2.
-rewrite yrhype in h2. rewrite -yrhype in h2. rewrite -yrhype.
-exact (andP h2).2.
-rewrite ylhype in h2. rewrite -ylhype in h2.
-exact (andP h2).2. exact: (IHn yr) hyr hyr3.
-rewrite hyr2.
-case ylhype: yl => [|yll ylr|yll|ylr] //.
-case yrhype: yr => [|yrl yrr|yrl|yrr] //.
-set casehype := jt_expression_beq yll yrr.
-case ch: casehype.
-rewrite yhype in h2.
-simpl in h2.
-rewrite ylhype in h2.
-rewrite yrhype in h2.
-have hbad: ~~ jt_expression_beq yll yrr.
-exact: (andP (andP h2).1).1.
-have hbad2: jt_expression_beq yll yrr. by [].
-move/negPf in hbad.
-move: hbad2. rewrite hbad.
-all: try by [].
-have hyl2: jt_reduce_exp yl = yl.
-rewrite yhype in h2.
-have hyl3: is_uncancellable yl.
-simpl in h2.
-case ylhype: yl => [|yll ylr|yll|ylr] //.
-rewrite ylhype in h2.
-by [].
-rewrite ylhype in h2. exact h2.
-rewrite ylhype in h2. exact h2.
-rewrite yhype in h1. simpl in h1. exact: (IHn yl) h1 hyl3.
-simpl; rewrite hyl2.
-case ylhype: yl => [|yll ylr|yll|ylr] //.
-rewrite yhype in h2; by rewrite ylhype in h2.
+- induction n. move => y hy.
+  rewrite (depth_at_most_zero_is_empty y hy) //.
+- move => y h1 h2.
+  case yhype: y => [//|yl yr|yl|yr].
+  - rewrite yhype in h1.
+    simpl in h1.
+    have hyl:jt_depth yl <= n. by lia. have hyr:jt_depth yr <= n. by lia.
+    have hyl2: jt_reduce_exp yl = yl.
+    - rewrite yhype in h2.
+      have hyl3: is_uncancellable yl.
+      - simpl in h2.
+        case ylhype: yl => [//|yll ylr|yll|ylr].
+        - rewrite ylhype in h2; rewrite -ylhype in h2; rewrite -ylhype; exact (andP h2).1.
+        - rewrite ylhype in h2; rewrite -ylhype in h2; rewrite -ylhype.
+          case yrhype: yr => [|yrl yrr|yrl|yrr].
+          - all: try rewrite yrhype in h2; try rewrite -yrhype in h2; try exact (andP h2).1.
+          exact: (andP ((andP h2).1)).2.
+        - rewrite -ylhype; rewrite ylhype in h2; rewrite -ylhype in h2; exact (andP h2).1.
+      exact: (IHn yl) hyl hyl3.
+  - simpl; rewrite hyl2.
+    have hyr2: jt_reduce_exp yr = yr.
+    - rewrite yhype in h2.
+      have hyr3: is_uncancellable yr.
+      - simpl in h2.
+        case ylhype: yl => [|yll ylr|yll|ylr].
+        - all: try rewrite ylhype in h2; try rewrite -ylhype in h2.
+        - exact (andP h2).2. exact (andP h2).2.
+          case yrhype: yr => [//|yrl yrr|yrl|yrr].
+          - rewrite yrhype in h2; rewrite -yrhype in h2; rewrite -yrhype; exact (andP h2).2.
+          - rewrite yrhype in h2; rewrite -yrhype in h2; rewrite -yrhype; exact (andP h2).2.
+          - rewrite yrhype in h2; rewrite -yrhype in h2; rewrite -yrhype; exact (andP h2).2.
+          exact: (andP h2).2.
+      exact: (IHn yr) hyr hyr3.
+    rewrite hyr2.
+    case ylhype: yl => [|yll ylr|yll|ylr] //. case yrhype: yr => [|yrl yrr|yrl|yrr] //.
+    set casehype := jt_expression_beq yll yrr.
+    case ch: casehype.
+    rewrite yhype in h2; simpl in h2; rewrite ylhype in h2; rewrite yrhype in h2.
+    have hbad: ~~ jt_expression_beq yll yrr. exact: (andP (andP h2).1).1.
+    have hbad2: jt_expression_beq yll yrr. by [].
+    move/negPf in hbad. move: hbad2. rewrite hbad.
+    all: try by [].
+    have hyl2: jt_reduce_exp yl = yl.
+    - rewrite yhype in h2.
+    - have hyl3: is_uncancellable yl.
+      - simpl in h2.
+        case ylhype: yl => [|yll ylr|yll|ylr] //.
+        - all: try rewrite ylhype in h2; try by [].
+      rewrite yhype in h1; simpl in h1; exact: (IHn yl) h1 hyl3.
+    simpl; rewrite hyl2.
+    case ylhype: yl => [|yll ylr|yll|ylr] //.
+    rewrite yhype in h2; by rewrite ylhype in h2.
 
 have hyr2: jt_reduce_exp yr = yr.
 - rewrite yhype in h2.
   have hyr3: is_uncancellable yr.
   - simpl in h2.
     case yrhype: yr => [|yrl yrr|yrl|yrr] //.
-    by rewrite yrhype in h2.
-    rewrite yrhype in h2; exact h2.
-    rewrite yrhype in h2; exact h2.
+    all: try rewrite yrhype in h2; try by [].
   rewrite yhype in h1; simpl in h1; exact: (IHn yr) h1 hyr3.
 simpl; rewrite hyr2.
 case yrhype: yr => [|yrl yrr|yrl|yrr] //.
 rewrite yhype in h2; by rewrite yrhype in h2.
+
+exact: inductversion (jt_depth x) x (leqnn (jt_depth x)).
 Qed.
 
 
@@ -719,83 +706,62 @@ Lemma inductive_reduced (a : jt_expression): ((jt_reduce_exp a = JEmpty) \/
 (exists (b c : jt_expression), jt_reduce_exp a = JNode (jt_reduce_exp b) (jt_reduce_exp c)))
 /\ is_uncancellable (jt_reduce_exp a). 
 Proof.
+
 Definition conclusion1 (x : jt_expression):= (jt_reduce_exp x = JEmpty) \/
 (exists (y : jt_expression), jt_reduce_exp x = JLeft (jt_reduce_exp y)) \/
 (exists (y : jt_expression), jt_reduce_exp x = JRight (jt_reduce_exp y)) \/
 (exists (y z : jt_expression), jt_reduce_exp x = JNode (jt_reduce_exp y) (jt_reduce_exp z)).
 Definition conclusion2 (x : jt_expression):= is_uncancellable (jt_reduce_exp x).
-Definition induct_claim_n (n: nat) := 
-forall (x: jt_expression), (jt_depth (x) <= n) -> conclusion1 x /\ conclusion2 x.
+Definition induct_claim_n (n: nat) := forall (x: jt_expression), (jt_depth (x) <= n) -> conclusion1 x /\ conclusion2 x.
+
 have base: induct_claim_n 0.
-unfold induct_claim_n.
-intro x.
-intro h.
-split.
-left.
-rewrite (depth_at_most_zero_is_empty (x) h).
-by [].
-unfold conclusion2.
-rewrite (depth_at_most_zero_is_empty (x) h).
-by [].
+- unfold induct_claim_n.
+- move => x h.
+  split.
+  - left. by rewrite (depth_at_most_zero_is_empty (x) h).
+  by rewrite (depth_at_most_zero_is_empty (x) h).
+
 have strong_induction_hype: forall (n: nat), induct_claim_n n -> induct_claim_n (S n).
-2 :{
+
+2:
+{
 have all_claims: forall (n: nat), induct_claim_n n.
 induction n.
 exact: base.
 exact: strong_induction_hype n IHn.
 exact: all_claims (jt_depth ( a)) a (leqnn (jt_depth ( a))).
 }
+
 unfold induct_claim_n.
-intro n.
-intro induct_hype.
-intro x.
-case Hx: x => [|xm xf|xl|xr].
-split.
-3:split.
-5:split.
-7:split.
-by left.
-by [].
+move => n induct_hype x.
+case Hx: x => [|xm xf|xl|xr] .
+  all: try split.
+- by left.
+- by [].
+
 (* conclusion1 node *)
-unfold conclusion1.
-simpl.
-set xmj := jt_reduce_exp xm.
-case Hxmj: xmj => [|xmjm xmjf|xmjl|xmjr].
-right.
-right.
-right.
-exists JEmpty.
-exists xf.
-by [].
-rewrite -Hxmj.
-right.
-right.
-right.
-exists xm.
-exists xf.
-by [].
+- unfold conclusion1.
+  simpl.
+  set xmj := jt_reduce_exp xm.
+  case Hxmj: xmj => [|xmjm xmjf|xmjl|xmjr].
+  - right. right. right.
+    exists JEmpty. by exists xf.
+  - rewrite -Hxmj.
+    right. right. right.
+    exists xm. by exists xf.
 set xfj := jt_reduce_exp xf.
 case Hxfj: xfj => [|xfjm xfjf|xfjl|xfjr].
-right.
-right.
-right.
+right. right. right.
 exists xm.
 exists JEmpty.
-rewrite -Hxmj.
-by [].
+by rewrite -Hxmj.
 rewrite -Hxfj.
 rewrite -Hxmj.
-right.
-right.
-right.
-exists xm.
-exists xf.
-by [].
+right. right. right.
+exists xm. by exists xf.
 rewrite -Hxfj.
 rewrite -Hxmj.
-right.
-right.
-right.
+right. right. right.
 exists xm.
 exists xf.
 by [].
@@ -811,8 +777,7 @@ rewrite -/xmj in conc2xm.
 have redtarg: is_uncancellable xmjl.
 rewrite Hxmj in conc2xm.
 simpl in conc2xm.
-case Hxmjl: xmjl => [|xmjlm xmjlf|xmjll|xmjlr].
-by [].
+case Hxmjl: xmjl => [|xmjlm xmjlf|xmjll|xmjlr] //.
 rewrite Hxmjl in conc2xm.
 by [].
 rewrite Hxmjl in conc2xm.
@@ -832,7 +797,7 @@ exact: (induct_hype xmjl shallowxmjl).1.
 unfold conclusion1 in conc1xmjl.
 have alred: jt_reduce_exp xmjl = xmjl.
 exact: dont_reduce_reduced redtarg.
-rewrite alred in conc1xmjl.
+rewrite alred in conc1xmjl. 
 by [].
 right.
 right.
@@ -1105,43 +1070,30 @@ exists xljml.
 have red_xljml: is_uncancellable xljml.
 rewrite Hxljm in red_xljm.
 simpl in red_xljm.
-case Hxljml: xljml => [|xljmlm xljmlf|xljmll|xljmlr].
-by [].
+case Hxljml: xljml => [|xljmlm xljmlf|xljmll|xljmlr] //.
 all: try rewrite Hxljml in red_xljm.
-by [].
-by [].
-by [].
+all: try by [].
 have Heql:  (jt_reduce_exp xljml) = xljml.
 exact: dont_reduce_reduced xljml red_xljml.
 rewrite Heql.
 by [].
-right.
-right.
-left.
+right. right. left.
 have red_xljmr: is_uncancellable xljmr.
 rewrite Hxljm in red_xljm.
 simpl in red_xljm.
-case Hxljmr: xljmr => [|xljmrm xljmrf|xljmrl|xljmrr].
-by [].
+case Hxljmr: xljmr => [|xljmrm xljmrf|xljmrl|xljmrr] //.
 all: try rewrite Hxljmr in red_xljm.
-by [].
-by [].
-by [].
+all: try by [].
 have Heqr : (jt_reduce_exp xljmr) = xljmr.
 exact: dont_reduce_reduced xljmr red_xljmr.
 exists xljmr.
-rewrite Heqr.
-by [].
+by rewrite Heqr.
 rewrite -Hxlj.
-right.
-left.
-exists xl.
-by [].
-right.
-left.
+right. left.
+by exists xl.
+right. left.
 rewrite -Hxlj.
-exists xl.
-by [].
+by exists xl.
 (* conclusion2 left *)
 unfold conclusion2.
 simpl.
@@ -1159,8 +1111,7 @@ unfold conclusion2 in conc2cl.
 rewrite -/xlj in conc2cl.
 rewrite Hxlj in conc2cl.
 simpl in conc2cl.
-case Hxljm: xljm => [|xljmm xljmf|xljml|xljmr].
-by [].
+case Hxljm: xljm => [|xljmm xljmf|xljml|xljmr] //.
 all: try rewrite Hxljm in conc2cl.
 all: try exact: (andP conc2cl).1.
 case Hxljf: xljf => [|xljfm xljff|xljfl|xljfr].
@@ -1193,11 +1144,7 @@ case: conc1xr.
 intro h1.
 rewrite -/xrj in h1.
 rewrite h1.
-right.
-right.
-left.
-exists JEmpty.
-by [].
+right. right. left. by exists JEmpty.
 intro h2.
 case h2.
 intro h3.
@@ -1208,9 +1155,7 @@ case: h3 => [y hy].
 rewrite hy.
 set yj := jt_reduce_exp y.
 rewrite -hy.
-right.
-right.
-left.
+right. right. left.
 exists xrj.
 have Heq:  (jt_reduce_exp xrj) = xrj.
 exact: dont_reduce_reduced xrj conc2cl.
@@ -1219,16 +1164,12 @@ by [].
 rewrite -/xrj.
 intro h3.
 case Hxrj: xrj => [|xrjm xrjf|xrjl|xrjr].
-right.
-right.
-left.
-exists JEmpty.
-by [].
+right. right. left.
+by exists JEmpty.
 case h3.
 intro h4.
 case: h4 => [y hy].
-rewrite hy in Hxrj.
-by [].
+by rewrite hy in Hxrj.
 intro h4.
 case: h4 => [y h4].
 case: h4 => [z h4].
@@ -1237,8 +1178,7 @@ case h2.
 intro h5.
 case h5 => [d hd].
 rewrite -/xrj in hd.
-rewrite Hxrj in hd.
-by [].
+by rewrite Hxrj in hd.
 rewrite -/xrj.
 intro h6.
 have red_xrjf: is_uncancellable xrjf.
@@ -1257,15 +1197,12 @@ have Heq:  (jt_reduce_exp xrjf) = xrjf.
 exact: dont_reduce_reduced xrjf red_xrjf.
 case Hxrjf: xrjf => [|xrjfm xrjff|xrjfl|xrjfr].
 by left.
-right.
-right.
-right.
-exists xrjfm.
-exists xrjff.
+right. right. right.
+exists xrjfm. exists xrjff.
 have red_xrjfm: (is_uncancellable xrjfm) /\ (is_uncancellable xrjff).
 rewrite Hxrjf in red_xrjf.
 simpl in red_xrjf.
-case Hxrjfm: xrjfm => [|xrjfmm xrjfmf|xrjfml|xrjfmr].
+case Hxrjfm: xrjfm => [|xrjfmm xrjfmf|xrjfml|xrjfmr] //.
 split.
 by [].
 all: try rewrite Hxrjfm in red_xrjf.
@@ -1278,25 +1215,19 @@ split.
 exact: (andP (andP red_xrjf).1).2.
 exact: (andP red_xrjf).2.
 rewrite (dont_reduce_reduced xrjfm red_xrjfm.1).
-rewrite (dont_reduce_reduced xrjff red_xrjfm.2).
-by [].
-right.
-left.
+by rewrite (dont_reduce_reduced xrjff red_xrjfm.2).
+right. left.
 exists xrjfl.
 have red_xrjfl: is_uncancellable xrjfl.
 rewrite Hxrjf in red_xrjf.
 simpl in red_xrjf.
-case Hxrjfl: xrjfl => [|xrjflm xrjflf|xrjfll|xrjflr].
-by [].
+case Hxrjfl: xrjfl => [|xrjflm xrjflf|xrjfll|xrjflr] //.
 all: try rewrite Hxrjfl in red_xrjf.
 all: try by [].
 have Heqr:  (jt_reduce_exp xrjfl) = xrjfl.
 exact: dont_reduce_reduced xrjfl red_xrjfl.
-rewrite Heqr.
-by [].
-right.
-right.
-left.
+by rewrite Heqr.
+right. right. left.
 have red_xrjfr: is_uncancellable xrjfr.
 rewrite Hxrjf in red_xrjf.
 simpl in red_xrjf.
@@ -1306,37 +1237,20 @@ all: try by [].
 have Heqr : (jt_reduce_exp xrjfr) = xrjfr.
 exact: dont_reduce_reduced xrjfr red_xrjfr.
 exists xrjfr.
-rewrite Heqr.
-by [].
+by rewrite Heqr.
 rewrite -Hxrj.
-right.
-right.
-left.
-exists xr.
-by [].
-right.
-right.
-left.
-rewrite -Hxrj.
-exists xr.
-by [].
+right; right; left; by exists xr.
+right; right; left; rewrite -Hxrj; by exists xr.
 (* conclusion2 right *)
 unfold conclusion2.
 simpl.
 set xrj:= jt_reduce_exp xr.
-case Hxrj: xrj => [|xrjm xrjf|xrjl|xrjr].
-by [].
-have shallowxr : jt_depth xr <= n.
-simpl in H.
-by lia.
-have conc1xr: conclusion1 xr.
-exact: (induct_hype xr shallowxr).1.
-have conc2cl: conclusion2 xr.
-exact: (induct_hype xr shallowxr).2.
+case Hxrj: xrj => [|xrjm xrjf|xrjl|xrjr] //.
+have shallowxr : jt_depth xr <= n. simpl in H. by lia.
+have conc1xr: conclusion1 xr. exact: (induct_hype xr shallowxr).1.
+have conc2cl: conclusion2 xr. exact: (induct_hype xr shallowxr).2.
 unfold conclusion2 in conc2cl.
-rewrite -/xrj in conc2cl.
-rewrite Hxrj in conc2cl.
-simpl in conc2cl.
+rewrite -/xrj in conc2cl; rewrite Hxrj in conc2cl; simpl in conc2cl.
 case Hxrjm: xrjm => [|xrjmm xrjmf|xrjml|xrjmr].
 all: try rewrite Hxrjm in conc2cl.
 all: try exact: (andP conc2cl).2.
@@ -2048,66 +1962,88 @@ rewrite (fix21 x).
 by rewrite (h x).
 Qed.
 
-Definition TV_x0 : TV := TV_elt_defined_by_gen 
-(jt_lambda (jt_lambda (jt_alpha_0 jt_gen) (jt_alpha_0 (jt_alpha_1 jt_gen))) (jt_alpha_1 (jt_alpha_1 jt_gen))).
-Definition TV_x0_inv : TV := TV_elt_defined_by_gen (jt_lambda (jt_alpha_0 (jt_alpha_0 jt_gen)) (jt_lambda (jt_alpha_1 (jt_alpha_0 jt_gen)) (jt_alpha_1 jt_gen))).
+
+Create HintDb jt_expression_tools.
+Hint Rewrite jt_rep_proj_cancel : jt_expression_tools.
+Hint Rewrite jt_reduction_is_idempotent : jt_expression_tools.
+Ltac jt_expression_simpl := autorewrite with jt_expression_tools.
+Create HintDb jt_elt_tools.
+Hint Rewrite jt_proj_rep_cancel : jt_elt_tools.
+Hint Rewrite free_jt_is_jt_algebra.1 : jt_elt_tools.
+Hint Rewrite free_jt_is_jt_algebra.2.1 : jt_elt_tools.
+Hint Rewrite free_jt_is_jt_algebra.2.2 : jt_elt_tools.
+Ltac jt_elt_simpl := autorewrite with jt_elt_tools.
+Ltac jt_endo_simpl f hendo :=
+  unfold is_jt_endo in hendo;
+  repeat first [
+    rewrite (hendo.1 _)
+  | rewrite (hendo.2.1 _)
+  | rewrite (hendo.2.2 _ _)
+  ].
 
 
-Definition TV_Beq : TV -> TV -> bool := 
-fun f g => jt_expression_beq (jt_rep (TV_act f jt_gen)) (jt_rep (TV_act f jt_gen)).
-
-
-Eval compute in TV_Beq TV_x0 TV_x0_inv.
-
+Definition x0_gen_map := (jt_lambda (jt_lambda (jt_alpha_0 jt_gen) (jt_alpha_0 (jt_alpha_1 jt_gen))) (jt_alpha_1 (jt_alpha_1 jt_gen))).
+Definition TV_x0 : TV := TV_elt_defined_by_gen x0_gen_map.
+Definition x0_inv_gen_map := (jt_lambda (jt_alpha_0 (jt_alpha_0 jt_gen)) (jt_lambda (jt_alpha_1 (jt_alpha_0 jt_gen)) (jt_alpha_1 jt_gen))).
+Definition TV_x0_inv : TV := TV_elt_defined_by_gen x0_inv_gen_map.
 Lemma TV_x0_x0_inv_are_inverses: TV_are_inverse TV_x0 TV_x0_inv.
 Proof.
 unfold TV_are_inverse.
-set F := TV_x0.
-case F as [f hf] eqn:Fhy.
-have fact: TV_act F jt_gen =
-       (jt_lambda (jt_lambda (jt_alpha_0 jt_gen) (jt_alpha_0 (jt_alpha_1 jt_gen))) (jt_alpha_1 (jt_alpha_1 jt_gen))).
-exact: (TV_elt_defined_by_gen_maps_gen (jt_lambda (jt_lambda (jt_alpha_0 jt_gen) (jt_alpha_0 (jt_alpha_1 jt_gen))) (jt_alpha_1 (jt_alpha_1 jt_gen)))).
-rewrite Fhy in fact.
-
-set G := TV_x0_inv.
-case G as [g hg] eqn:Ghy.
-have invact: TV_act G
-         jt_gen =
-       jt_lambda (jt_alpha_0 (jt_alpha_0 jt_gen))
-         (jt_lambda
-            (jt_alpha_1 (jt_alpha_0 jt_gen))
-            (jt_alpha_1 jt_gen)).
-exact: (TV_elt_defined_by_gen_maps_gen (jt_lambda (jt_alpha_0 (jt_alpha_0 jt_gen)) (jt_lambda (jt_alpha_1 (jt_alpha_0 jt_gen)) (jt_alpha_1 jt_gen)))).
-rewrite Ghy in invact.
-simpl in invact.
-simpl in fact.
+set F := TV_x0; case F as [f hf] eqn:Fhy.
+have Fact: TV_act F jt_gen = x0_gen_map.
+exact: TV_elt_defined_by_gen_maps_gen x0_gen_map.
+rewrite Fhy in Fact.
+set G := TV_x0_inv; case G as [g hg] eqn:Ghy.
+have Gact: TV_act G jt_gen = x0_inv_gen_map. 
+exact: TV_elt_defined_by_gen_maps_gen x0_inv_gen_map.
+rewrite Ghy in Gact.
+simpl in Fact; simpl in Gact.
 split.
 all: apply jt_hom_determined_by_gen.
 all: rewrite (TV_action_associates _ _ jt_gen).
-all: rewrite (TV_id_fixes_all jt_gen).
-simpl.
-rewrite invact.
-rewrite hf.2.2.
-rewrite hf.2.2.
-rewrite hf.1.
-rewrite hf.1.
-rewrite hf.2.1.
-rewrite hf.2.1.
-rewrite hf.1.
-rewrite fact.
-admit.
-simpl.
-rewrite fact.
-rewrite hg.2.2.
-rewrite hg.2.2.
-rewrite hg.1.
-rewrite hg.1.
-rewrite hg.2.1.
-rewrite hg.2.1.
-rewrite hg.2.1.
-rewrite invact.
-admit.
-Admitted.
+all: rewrite (TV_id_fixes_all jt_gen); simpl.
+rewrite Gact.
+jt_endo_simpl f hf.
+rewrite Fact.
+unfold x0_gen_map; by jt_elt_simpl.
+rewrite Fact.
+jt_endo_simpl g hg.
+rewrite Gact. 
+unfold x0_inv_gen_map; by jt_elt_simpl.
+Qed.
+Definition x1_gen_map := jt_lambda (jt_alpha_0 jt_gen) (jt_lambda (jt_lambda (jt_alpha_0 (jt_alpha_1 jt_gen)) (jt_alpha_0 (jt_alpha_1 (jt_alpha_1 jt_gen)))) (jt_alpha_1 (jt_alpha_1 (jt_alpha_1 jt_gen)))).
+Definition TV_x1 : TV := TV_elt_defined_by_gen x1_gen_map.
+Definition x1_inv_gen_map := jt_lambda (jt_alpha_0 jt_gen) (jt_lambda (jt_alpha_0 (jt_alpha_0 (jt_alpha_1 jt_gen))) (jt_lambda (jt_alpha_1 (jt_alpha_0 (jt_alpha_1 jt_gen))) (jt_alpha_1 (jt_alpha_1 jt_gen)))).
+Definition TV_x1_inv : TV := TV_elt_defined_by_gen x1_inv_gen_map.
+Lemma TV_x1_x1_inv_are_inverses: TV_are_inverse TV_x1 TV_x1_inv.
+Proof.
+unfold TV_are_inverse.
+set F := TV_x1; case F as [f hf] eqn:Fhy.
+have Fact: TV_act F jt_gen = x1_gen_map.
+exact: TV_elt_defined_by_gen_maps_gen x1_gen_map.
+rewrite Fhy in Fact.
+set G := TV_x1_inv; case G as [g hg] eqn:Ghy.
+have Gact: TV_act G jt_gen = x1_inv_gen_map. 
+exact: TV_elt_defined_by_gen_maps_gen x1_inv_gen_map.
+rewrite Ghy in Gact.
+simpl in Fact; simpl in Gact.
+split.
+all: apply jt_hom_determined_by_gen.
+all: rewrite (TV_action_associates _ _ jt_gen).
+all: rewrite (TV_id_fixes_all jt_gen); simpl.
+rewrite Gact.
+jt_endo_simpl f hf.
+rewrite Fact.
+unfold x1_gen_map; by jt_elt_simpl.
+rewrite Fact.
+jt_endo_simpl g hg.
+rewrite Gact. 
+unfold x1_inv_gen_map; by jt_elt_simpl.
+Qed.
+Definition V_x0 : V := exist _ (TV_x0, TV_x0_inv) TV_x0_x0_inv_are_inverses.
+Definition V_x1 : V := exist _ (TV_x1, TV_x1_inv) TV_x1_x1_inv_are_inverses.
+
+
 
 (* For choice Type, try to
   write a function which takes a jt_expression and returns a
